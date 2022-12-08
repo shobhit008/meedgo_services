@@ -75,7 +75,9 @@ class SearchAPIView(generics.CreateAPIView):
   serializer_class = searchSerializer
 
   def post(self, request, *args, **kwargs):
+    searched_data = {}
     serch_Item = request.data
-    searched_data = One_mg(serch_Item)
+    onemg_searched_data = One_mg(serch_Item)
+    searched_data.update({"one_mg":onemg_searched_data})
     return Response(searched_data, status=200)
     
