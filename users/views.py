@@ -22,7 +22,7 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Profile
-from .price_scraping import One_mg
+from .price_scraping import One_mg, pharm_easy
 from .serializers import UserProfileSerializer, UserSerializer, searchSerializer
 import traceback
 
@@ -78,6 +78,7 @@ class SearchAPIView(generics.CreateAPIView):
     searched_data = {}
     serch_Item = request.data
     onemg_searched_data = One_mg(serch_Item)
-    searched_data.update({"one_mg":onemg_searched_data})
+    pharm_easy_data = pharm_easy(serch_Item)
+    searched_data.update({"one_mg":onemg_searched_data, "pharm_easy":pharm_easy_data})
     return Response(searched_data, status=200)
     

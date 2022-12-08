@@ -32,3 +32,32 @@ def One_mg(serch_field):
 
     # print(mrp_name)
     return mrp_name
+
+
+def pharm_easy(serch_field):
+
+    url = f'https://pharmeasy.in/search/all?name={serch_field["searchField"]}'
+
+    header = {'Origin': 'https://pharmeasy.in',
+    'Referer': url,
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'
+    }
+
+
+    html = requests.get(url=url,headers=header)
+    html.status_code
+
+    bsobj = soup(html.content, 'lxml')
+    # print(bsobj)
+
+    mrp = []
+    mrp_name = {}
+    product_names = bsobj.findAll('h1',{'class':'ProductCard_medicineName__17En6'})
+    mrps = bsobj.findAll('div',{'class':'ProductCard_ourPrice__3fkJf'})
+
+    for mrp, name in zip(mrps, product_names):
+        mrp_name.update({name.text:mrp.text})
+
+
+    # print(mrp_name)
+    return mrp_name
