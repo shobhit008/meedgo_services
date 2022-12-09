@@ -70,7 +70,7 @@ class getUserDetail(generics.CreateAPIView):
 
 
 #Class based view to register user
-class SearchAPIView(generics.CreateAPIView):
+class SearchAPIViewDict(generics.CreateAPIView):
   permission_classes = (AllowAny,)
   serializer_class = searchSerializer
 
@@ -79,6 +79,19 @@ class SearchAPIView(generics.CreateAPIView):
     serch_Item = request.data
     onemg_searched_data = One_mg(serch_Item)
     pharm_easy_data = pharm_easy(serch_Item)
+    searched_data.update({"one_mg":onemg_searched_data, "pharm_easy":pharm_easy_data})
+    return Response(searched_data, status=200)
+
+#Class based view to register user
+class SearchAPIViewList(generics.CreateAPIView):
+  permission_classes = (AllowAny,)
+  serializer_class = searchSerializer
+
+  def post(self, request, *args, **kwargs):
+    searched_data = {}
+    serch_Item = request.data
+    onemg_searched_data = One_mg(serch_Item, True)
+    pharm_easy_data = pharm_easy(serch_Item, True)
     searched_data.update({"one_mg":onemg_searched_data, "pharm_easy":pharm_easy_data})
     return Response(searched_data, status=200)
     

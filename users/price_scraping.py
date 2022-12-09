@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup as soup
 
 
-def One_mg(serch_field):
+def One_mg(serch_field, isList=False):
 
     url = f'https://www.1mg.com/search/all?filter=true&name={serch_field["searchField"]}'
 
@@ -23,18 +23,25 @@ def One_mg(serch_field):
 
     mrp = []
     mrp_name = {}
+    mrp_name_list = []
     product_names = bsobj.findAll('div',{'class':'style__pro-title___3G3rr'})
     mrps = bsobj.findAll('div',{'class':'style__price-tag___KzOkY'})
 
     for mrp, name in zip(mrps, product_names):
-        mrp_name.update({name.text:mrp.text})
+        if isList:
+            mrp_name_list.append(f"{name.text} : {mrp.text}")
+        else:
+            mrp_name.update({name.text:mrp.text})
 
 
     # print(mrp_name)
-    return mrp_name
+    if isList:
+        return mrp_name_list
+    else:
+        return mrp_name
 
 
-def pharm_easy(serch_field):
+def pharm_easy(serch_field, isList=False):
 
     url = f'https://pharmeasy.in/search/all?name={serch_field["searchField"]}'
 
@@ -52,12 +59,19 @@ def pharm_easy(serch_field):
 
     mrp = []
     mrp_name = {}
+    mrp_name_list = []
     product_names = bsobj.findAll('h1',{'class':'ProductCard_medicineName__17En6'})
     mrps = bsobj.findAll('div',{'class':'ProductCard_ourPrice__3fkJf'})
 
     for mrp, name in zip(mrps, product_names):
-        mrp_name.update({name.text:mrp.text})
+        if isList:
+            mrp_name_list.append(f"{name.text} : {mrp.text}")
+        else:
+            mrp_name.update({name.text:mrp.text})
 
 
     # print(mrp_name)
-    return mrp_name
+    if isList:
+        return mrp_name_list
+    else:
+        return mrp_name

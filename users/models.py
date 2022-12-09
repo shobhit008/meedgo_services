@@ -6,9 +6,10 @@ from django.utils.html import mark_safe
 # Create your models here.
 
 class user_type_option(models.TextChoices):
-    Chemist = 'chemist', ('chemist')
-    User = 'user', ('user')
-    Other = 'other', ('other')
+    Customer = 'Customer', ('customer')
+    Pharmacists = 'Pharmacists', ('pharmacists')
+    Doctor = 'Doctor', ('doctor')
+    Hospitals = 'Hospitals', ('hospitals')
 
 class gender_option(models.TextChoices):
     Female = 'F', ('Female')
@@ -61,9 +62,9 @@ class CustomeUser(AbstractUser):
     isVerified = models.BooleanField(blank=False, default=False)
     counter = models.IntegerField(default=0, blank=False)   # For HOTP Verification
     user_type = models.CharField(
-                max_length=10,
+                max_length=15,
                 choices=user_type_option.choices,
-                default=user_type_option.User,
+                default=user_type_option.Customer,
             )
     gender = models.CharField(
                 max_length=10,
