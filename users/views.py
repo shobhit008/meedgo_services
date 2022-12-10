@@ -21,9 +21,9 @@ from rest_framework import generics
 from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Profile
+from .models import Profile, AddressBook
 from .price_scraping import One_mg, pharm_easy
-from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get
+from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer
 import traceback
 
 
@@ -65,8 +65,12 @@ class getUserDetail(UpdateAPIView):
         "name":serializer.data["name"],
         "email_address": serializer.data["email"],
         "mobile_no":serializer.data["mobile_number"],
+        "whatapp_mobile_number":serializer.data["whatapp_mobile_number"],
+        "data_of_birth":serializer.data["birth_date"],
         "isActivated":serializer.data["isVerified"],
         "user_type":serializer.data["user_type"],
+        "gender": serializer.data["gender"],
+        "age": serializer.data["age"],
         "profile_image":profile_serializer.data[0]['image'] if len(profile_serializer.data) != 0 else ""
     })
   
@@ -81,8 +85,6 @@ class getUserDetail(UpdateAPIView):
       "msg":"Profile updated successfully",
     }
     return Response(res, status=status.HTTP_201_CREATED)
-
-
 
 
 #Class based view to register user
@@ -119,7 +121,7 @@ class ProfilePicView(generics.CreateAPIView):
   serializer_class = ProfileSerializer
 
   def post(self, request, *args, **kwargs):
-      profile = Profile.objects.get(user = request.user)
+      profile, created = Profile.objects.get_or_create(user = request.user)
       file_serializer = ProfileSerializer(profile, data=request.data, partial=True)
       if file_serializer.is_valid():
           file_serializer.save()
@@ -135,4 +137,59 @@ class ProfilePicView(generics.CreateAPIView):
               'code':status.HTTP_400_BAD_REQUEST
           }
           return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AddressBookDetail(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+  serializer_class = AddressBookSerializer
+  
+  def get(self,request,*args,**kwargs):
+    address_book_obj = AddressBook.objects.filter(user=request.user)
+    serializer = AddressBookSerializer(instance=address_book_obj, many=True)
+    if True:
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+  def post(self, request, *args, **kwargs):
+      request.data['user'] = request.user.id
+      serializer = AddressBookSerializer(data=request.data)
+      if serializer.is_valid():
+          serializer.save()
+          res = {
+              'data':serializer.data,
+              'msg':'Address updated successfully',
+              'code':status.HTTP_201_CREATED
+          }
+          return Response(res, status=status.HTTP_201_CREATED)
+      else:
+          res = {
+              'msg':'invalide input',
+              'code':status.HTTP_400_BAD_REQUEST
+          }
+          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+  def update(self,request,*args,**kwargs):
+    try:
+      AddressBook_id = AddressBook.objects.get(id=request.data['id'])
+      Address_serializer = AddressBookSerializer(AddressBook_id, data=request.data, partial=True)
+      if Address_serializer.is_valid():
+        Address_serializer.save()
+
+      res = {
+        "msg":"Profile updated successfully",
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+      
     

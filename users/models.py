@@ -57,6 +57,7 @@ class CustomeUser(AbstractUser):
     username = models.CharField(max_length=30, blank=True, null=True)
     name = models.CharField(max_length=30, blank=True, null=True)
     mobile_number = models.CharField(max_length=10, unique=True)
+    whatapp_mobile_number = models.CharField(max_length=10,null=True, blank=True)
     email = models.EmailField(('email address'), unique=True,null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     isVerified = models.BooleanField(blank=False, default=False)
@@ -71,6 +72,8 @@ class CustomeUser(AbstractUser):
                 choices=gender_option.choices,
                 default=gender_option.Male,
         )
+
+    age = models.IntegerField(default=0, blank=True)
 
     USERNAME_FIELD = 'mobile_number'
     REQUIRED_FIELDS = []
@@ -96,3 +99,16 @@ class Profile(models.Model):
 
    def __str__(self):
       return f'{self.user.username} Profile'
+
+
+class AddressBook(models.Model):
+    user = models.ForeignKey('CustomeUser', on_delete=models.CASCADE, blank=True, null=True)
+    house_number =  models.CharField(max_length=30, blank=True, null=True)
+    landmark =  models.CharField(max_length=300, blank=True, null=True)
+    locality =  models.CharField(max_length=300, blank=True, null=True)
+    pincode =  models.CharField(max_length=6, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    state =  models.CharField(max_length=30, blank=True, null=True)
+    is_default = models.BooleanField(default=False)
+    country =  models.CharField(max_length=30, blank=True, null=True)
+

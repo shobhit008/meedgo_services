@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from .models import CustomeUser, Profile
+from .models import CustomeUser, Profile, AddressBook
 from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -99,3 +99,8 @@ class searchSerializer(serializers.ModelSerializer):
     extra_kwargs = {
       'searchField': {'required': True}
     }
+
+class AddressBookSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = AddressBook
+    fields = "__all__"
