@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
-from .models import CustomeUser, Profile, AddressBook
+from .models import CustomeUser, Profile, AddressBook, Order
 from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.
@@ -47,6 +47,13 @@ class AddressBookAdmin(admin.ModelAdmin):
     """
     list_display = ('user', 'house_number', 'landmark', 'locality', 'pincode', 'city', 'state', 'is_default', 'country')
 
+class OrderAdmin(admin.ModelAdmin):
+    """
+    This class is used to display the Order model in the admin page.
+    """
+    list_display = ('user', 'order_number', 'total', 'stickers_price', 'discount', 'shipping_cost', 'status')
+
+admin.site.register(Order, OrderAdmin)
 admin.site.register(AddressBook, AddressBookAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(CustomeUser)

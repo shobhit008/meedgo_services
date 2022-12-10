@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail
+from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail, OrderDetail
 from django.urls import path, include
 from .otp_views import getPhoneNumberRegistered, getPhoneNumberRegistered_TimeBased, getPhoneNumberRegistered_TimeBased_verify
 
@@ -13,4 +13,5 @@ urlpatterns = [
     path("Search_medicine_list/", SearchAPIViewList.as_view(), name="SearchAPIViewList"),
     path('update_profile_pic/', ProfilePicView.as_view(), name='update_profile_pic'),
     path('Address_Book_Details/', AddressBookDetail.as_view(), name='AddressBookDetail'),
+    path('make_order/', OrderDetail.as_view(), name='make_order'),
 ]

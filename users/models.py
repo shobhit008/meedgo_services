@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.utils.html import mark_safe
+from decimal import *
 
 # Create your models here.
 
@@ -111,4 +112,33 @@ class AddressBook(models.Model):
     state =  models.CharField(max_length=30, blank=True, null=True)
     is_default = models.BooleanField(default=False)
     country =  models.CharField(max_length=30, blank=True, null=True)
+
+
+class Order(models.Model):
+    ORDER_STATUS = (
+        ('initiated', 'Initiated'),
+        ('in transition', 'In transition'),
+        ('out for delivery', 'Out for delivery'),
+        ('delivered', 'Delivered'),
+    )
+
+    user = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True)
+    order_number = models.CharField(max_length=50, unique=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    stickers_price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    created = models.DateTimeField(auto_now_add=True)
+    shipping_address = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=ORDER_STATUS, default='initiated')
+    comments = models.CharField(max_length=400, blank=True, null=True, default='')
+
+    class Meta:
+        db_table = 'Order'
+        ordering = ['-created']
+    
+    def __str__(self):
+        return str(self.id)
+
+    
 
