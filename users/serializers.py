@@ -11,11 +11,35 @@ from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 User = get_user_model()
-#Serializer to Get User Details using Django Token Authentication
-class UserSerializer(serializers.ModelSerializer):
+
+class ProfileSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Profile
+    fields = ('image',)
+
+class UserSerializer_get(WritableNestedModelSerializer, serializers.ModelSerializer):
   class Meta:
     model = User
     fields = "__all__"
+
+#Serializer to Get User Details using Django Token Authentication
+class UserSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
+  class Meta:
+    model = User
+    fields = "__all__"
+
+  def get_fields(self):
+      fields = super().get_fields()
+
+      exclude_fields = self.context.get('exclude_fields', ["mobile_number","groups", "user_permissions", "password"])
+      for field in exclude_fields:
+        if field in ["mobile_number","groups", "user_permissions", "password"]:
+          fields.pop(field, default=None)
+        else:
+          fields.pop(field, default=None)
+
+      return fields
+
 
 #Serializer to Register User
 class RegisterSerializer(serializers.ModelSerializer):
