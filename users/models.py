@@ -138,7 +138,32 @@ class Order(models.Model):
         ordering = ['-created']
     
     def __str__(self):
+        return str(self.order_number)
+
+class Medicine(models.Model):
+    name = models.CharField(max_length=300,blank=True, null=True, unique=True)
+    manufracturing_data = models.DateTimeField()
+    expiry_date = models.DateTimeField()
+    categoty = models.CharField(max_length=50, blank=True, null=True)
+    brand = models.CharField(max_length=200, blank=True, null=True)
+    price = models.IntegerField(default=0)
+    image = models.FileField(default='default.jpg', upload_to='medicine_pics', null=True, blank=True )
+
+    def __str__(self):
+        return str(self.name)
+
+class orderMedicineData(models.Model):
+    order = models.ForeignKey('Order',on_delete=models.CASCADE, blank=True, null=True)
+    medicine = models.ForeignKey('Medicine',on_delete=models.DO_NOTHING, blank=True, null=True)
+
+    def __str__(self):
         return str(self.id)
 
-    
+class Cart(models.Model):
+    user = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True)
+    medicine = models.ForeignKey('Medicine',on_delete=models.DO_NOTHING, blank=True, null=True)
+    quantity = models.CharField(max_length=200, blank=True, null=True)
+    def __str__(self):
+        return str(self.user.mobile_number)
+
 
