@@ -57,7 +57,7 @@ class MedicineAdmin(admin.ModelAdmin):
     """
     This class is used to display the Order model in the admin page.
     """
-    list_display = ('name', 'manufracturing_data', 'expiry_date', 'categoty', 'price', 'brand')
+    list_display = ('name', 'manufracturing_date', 'expiry_date', 'category', 'price', 'brand')
 
 class OrderMedicineDataAdmin(admin.ModelAdmin):
     """

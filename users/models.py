@@ -131,6 +131,9 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     shipping_address = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20, choices=ORDER_STATUS, default='initiated')
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_options = models.CharField(max_length=100, blank=True, null=True)
+    payment_status = models.CharField(max_length=100, blank=True, null=True)
     comments = models.CharField(max_length=400, blank=True, null=True, default='')
 
     class Meta:
@@ -142,12 +145,23 @@ class Order(models.Model):
 
 class Medicine(models.Model):
     name = models.CharField(max_length=300,blank=True, null=True, unique=True)
-    manufracturing_data = models.DateTimeField()
+    description = models.CharField(max_length=300,blank=True, null=True)
+    manufracturing_date = models.DateTimeField()
     expiry_date = models.DateTimeField()
-    categoty = models.CharField(max_length=50, blank=True, null=True)
+    category = models.CharField(max_length=50, blank=True, null=True)
     brand = models.CharField(max_length=200, blank=True, null=True)
     price = models.IntegerField(default=0)
-    image = models.FileField(default='default.jpg', upload_to='medicine_pics', null=True, blank=True )
+    offer_price = models.IntegerField(default=0)
+    discount = models.IntegerField(default=0)
+    discount_type = models.CharField(max_length=50, blank=True, null=True)
+    flavour = models.CharField(max_length=50, blank=True, null=True)
+    consume_type = models.CharField(max_length=50, blank=True, null=True)
+    storage = models.CharField(max_length=50, blank=True, null=True)
+    precautions = models.CharField(max_length=300, blank=True, null=True)
+    prescription_required = models.BooleanField(default=False)
+    directions_for_use = models.CharField(max_length=300, blank=True, null=True)
+    special_advice = models.CharField(max_length=300, blank=True, null=True)
+    product_image = models.FileField(default='default.jpg', upload_to='medicine_pics', null=True, blank=True )
 
     def __str__(self):
         return str(self.name)
