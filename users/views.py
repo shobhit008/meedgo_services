@@ -21,9 +21,9 @@ from rest_framework import generics
 from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData
+from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData, userIssue
 from .price_scraping import One_mg, pharm_easy
-from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer
+from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin
 import traceback
 from meedgo_services.utils import order_number
 
@@ -369,5 +369,83 @@ class cartDetail(UpdateAPIView):
     except:
       res = {
         "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class userIssueDetail(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+  # parser_classes = (MultiPartParser, FormParser)
+  serializer_class = userIssueSerializer
+
+  def get(self,request,*args,**kwargs):
+    cart_obj = userIssue.objects.filter(user_id = request.user.id)  
+    serializer = self.serializer_class(instance=cart_obj, many=True)
+    if True:
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+  def post(self, request, *args, **kwargs):
+      request.data['issue_number'] = order_number(request.user.id, id_type = "Issue_")
+      request.data['user'] = request.user.id
+      serializer = self.serializer_class(data=request.data)
+      if serializer.is_valid():
+          serializer.save()
+          res = {
+              'data':serializer.data,
+              'msg':'Issue registed successfully',
+              'code':status.HTTP_201_CREATED
+          }
+          return Response(res, status=status.HTTP_201_CREATED)
+      else:
+          res = {
+              'msg':'invalide input',
+              'code':status.HTTP_400_BAD_REQUEST
+          }
+          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
+  def update(self,request,*args,**kwargs):
+    try:
+      user_issue_id = userIssue.objects.get(issue_number=request.data['issue_number'])
+      medicine_serializer = self.serializer_class(user_issue_id, data=request.data, partial=True)
+      if medicine_serializer.is_valid():
+        medicine_serializer.save()
+
+      res = {
+          'data':medicine_serializer.data,
+          'msg':'Issue Updated successfully',
+          'code':status.HTTP_201_CREATED
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class userIssueDetailAdmin(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+  # parser_classes = (MultiPartParser, FormParser)
+  serializer_class = userIssueSerializer
+
+  def get(self,request,*args,**kwargs):
+    cart_obj = userIssue.objects.all()  
+    serializer = userIssueSerializer_admin(instance=cart_obj, many=True)
+    if True:
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)

@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from .models import CustomeUser, Profile, AddressBook,Order, Medicine, Cart, orderMedicineData
+from .models import CustomeUser, Profile, AddressBook,Order, Medicine, Cart, orderMedicineData, userIssue
 from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -143,3 +143,15 @@ class CartSerializer(serializers.ModelSerializer):
     serializer = MedicineSerializer(oderedMedicenes, many=False)
     # serializer = orderMedicineDataSerializer(orderMedicine, many=True)
     return serializer.data
+
+class userIssueSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = userIssue
+    fields = "__all__"
+
+class userIssueSerializer_admin(serializers.ModelSerializer):
+  user_name = serializers.CharField(source='user.name')
+  phone_number = serializers.CharField(source='user.mobile_number')
+  class Meta:
+    model = userIssue
+    fields = "__all__"

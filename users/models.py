@@ -182,4 +182,27 @@ class Cart(models.Model):
     def __str__(self):
         return str(self.user.mobile_number)
 
+class userIssue(models.Model):
+    userIssue_options = (
+        ('Delivery issue', 'Delivery issue'),
+        ('Payment issue', 'Payment issue'),
+        ('Quality issue', 'Quality issue'),
+        ('Others', 'Others'),
+    )
+    ORDER_STATUS = (
+        ('Initiated', 'Initiated'),
+        ('In Progress', 'In Progress'),
+        ('Completed', 'Completed'),
+        ('Calceled', 'Calceled'),
+    )
+    user = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True)
+    issue_number = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    category = models.CharField(max_length=20, choices=userIssue_options, default='Delivery issue', blank=True, null=True)
+    description = models.CharField(max_length=500, blank=True, null=True)
+    status = models.CharField(max_length=30, choices=ORDER_STATUS, default='Initiated', blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+    comments = models.CharField(max_length=500, blank=True, null=True)
+
+
 
