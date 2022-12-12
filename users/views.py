@@ -194,6 +194,8 @@ class AddressBookDetail(UpdateAPIView):
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 def createOrderMedicinesMedicine(user, data, order_id):
+  if type(data) == str:
+    data = [str(i) for i in data.split(",")]
   for i in data:
     orderMedicineData.objects.create(
       order_id = order_id,
@@ -206,6 +208,7 @@ def createOrderMedicinesMedicine(user, data, order_id):
 class OrderDetail(UpdateAPIView):
   authentication_classes = (TokenAuthentication,)
   permission_classes = (IsAuthenticated,)
+  parser_classes = (MultiPartParser, FormParser)
   serializer_class = OrderSerializer
   
   def get(self,request,*args,**kwargs):

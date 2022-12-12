@@ -135,6 +135,8 @@ class Order(models.Model):
     payment_options = models.CharField(max_length=100, blank=True, null=True)
     payment_status = models.CharField(max_length=100, blank=True, null=True)
     comments = models.CharField(max_length=400, blank=True, null=True, default='')
+    prescription_image = models.FileField(default='default.jpg', upload_to='prescription_pics', null=True, blank=True )
+
 
     class Meta:
         db_table = 'Order'
