@@ -193,6 +193,21 @@ class AddressBookDetail(UpdateAPIView):
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
+  def delete(self, request, format=None):
+    try:
+      event = AddressBook.objects.get(id = request.data['id'])
+      event.delete()
+      res = {
+        "msg":"Address deleted successfully",
+      }
+      return Response(res, status=status.HTTP_204_NO_CONTENT)
+
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
 def createOrderMedicinesMedicine(user, data, order_id):
   if type(data) == str:
     data = [str(i) for i in data.split(",")]
@@ -320,9 +335,15 @@ class MedicineDetail(UpdateAPIView):
 
 
 class cartDetail(UpdateAPIView):
+  '''
+  For Delete User below Formate
+  {
+      "id":integer
+  }
+  '''
   authentication_classes = (TokenAuthentication,)
   permission_classes = (IsAuthenticated,)
-  parser_classes = (MultiPartParser, FormParser)
+  # parser_classes = (MultiPartParser, FormParser)
   serializer_class = CartSerializer
 
   def get(self,request,*args,**kwargs):
@@ -371,6 +392,22 @@ class cartDetail(UpdateAPIView):
         "msg":"something went wrong",
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+  def delete(self, request, format=None):
+    try:
+      event = Cart.objects.get(id = request.data['id'])
+      event.delete()
+      res = {
+        "msg":"Item deleted successfully",
+      }
+      return Response(res, status=status.HTTP_204_NO_CONTENT)
+
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class userIssueDetail(UpdateAPIView):

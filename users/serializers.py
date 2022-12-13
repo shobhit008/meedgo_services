@@ -72,15 +72,27 @@ class RegisterSerializer(serializers.ModelSerializer):
         {"password": "Password fields didn't match."})
     return attrs
   def create(self, validated_data):
-    user = User.objects.create(
-      email=validated_data['email'],
-      first_name=validated_data['first_name'],
-      last_name=validated_data['last_name'],
-      gender = validated_data['gender'],
-      mobile_number = validated_data['mobile_number'],
-      user_type = validated_data['user_type'],
-      name = validated_data['name']
-    )
+    if validated_data['user_type'] == "Pharmacists":
+      user = User.objects.create(
+        email=validated_data['email'],
+        first_name=validated_data['first_name'],
+        last_name=validated_data['last_name'],
+        gender = validated_data['gender'],
+        mobile_number = validated_data['mobile_number'],
+        user_type = validated_data['user_type'],
+        name = validated_data['name'],
+        is_active = False
+      )
+    else:
+      user = User.objects.create(
+        email=validated_data['email'],
+        first_name=validated_data['first_name'],
+        last_name=validated_data['last_name'],
+        gender = validated_data['gender'],
+        mobile_number = validated_data['mobile_number'],
+        user_type = validated_data['user_type'],
+        name = validated_data['name']
+      )
     user.set_password(validated_data['password'])
     user.save()
     return user

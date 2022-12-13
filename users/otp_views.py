@@ -66,13 +66,16 @@ class getPhoneNumberRegistered_TimeBased(APIView):
         except ObjectDoesNotExist:
             return Response({"msg":"Mobile Number Is Register"}, status=400)
         Mobile.save()  # Save the data
-        keygen = generateKey()
-        key = base64.b32encode(keygen.returnValue(phone).encode())  # Key is generated
-        OTP = pyotp.TOTP(key,interval = EXPIRY_TIME)  # TOTP Model for OTP is created
+        if Mobile.is_active:
+            keygen = generateKey()
+            key = base64.b32encode(keygen.returnValue(phone).encode())  # Key is generated
+            OTP = pyotp.TOTP(key,interval = EXPIRY_TIME)  # TOTP Model for OTP is created
 
-        print(OTP.now())
-        # Using Multi-Threading send the OTP Using Messaging Services like Twilio or Fast2sms
-        return Response({"OTP": OTP.now()}, status=200)  # Just for demonstration
+            print(OTP.now())
+            # Using Multi-Threading send the OTP Using Messaging Services like Twilio or Fast2sms
+            return Response({"OTP": OTP.now()}, status=200)  # Just for demonstration
+        else:
+            return Response({"user_id":Mobile.id, "mag":"Document verificaton is pending"}, status=200)  # Just for demonstration
 
 
 def get_user_res(obj):
