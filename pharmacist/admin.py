@@ -11,4 +11,11 @@ class pharmacistDetailsAdmin(admin.ModelAdmin):
     """
     list_display = ('user', 'licence_image', 'registration_image', 'id_image', 'tan_number')
 
+class pharmacistStockAdmin(admin.ModelAdmin):
+    """
+    This class is used to display the pharmacistStock model in the admin page.
+    """
+    list_display = ('user', 'meedgo_medicine', 'pharmacist_price', 'total_stock')
+
+admin.site.register(pharmacistStock, pharmacistStockAdmin)
 admin.site.register(pharmacistDetails, pharmacistDetailsAdmin)

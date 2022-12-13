@@ -3,7 +3,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.utils.html import mark_safe
 from decimal import *
-from users.models import CustomeUser
+from users.models import CustomeUser, Medicine
 
 
 class pharmacistDetails(models.Model):
@@ -14,4 +14,16 @@ class pharmacistDetails(models.Model):
     tan_number = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return self.user.mobile_number    
+        return self.user.mobile_number   
+
+class pharmacistStock(models.Model):
+    user = models.ForeignKey(CustomeUser, on_delete=models.CASCADE, null=True, blank=True)
+    meedgo_medicine = models.OneToOneField(Medicine, on_delete=models.CASCADE, null=True, blank=True)
+    manufracturing_date = models.DateTimeField()
+    expiry_date = models.DateTimeField()
+    pharmacist_price = models.IntegerField(default=0)
+    total_stock = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.mobile_number  
+

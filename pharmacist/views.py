@@ -18,9 +18,10 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
-from .serializers import pharmacistDetailsSerializer
+from .serializers import pharmacistDetailsSerializer, pharmacistStockSerializer
 import traceback
 from meedgo_services.utils import order_number
+from .permissions import PharmacistPermission
 
 # Create your views here.
 class docUpdaload(UpdateAPIView):
@@ -30,7 +31,7 @@ class docUpdaload(UpdateAPIView):
   serializer_class = pharmacistDetailsSerializer
 
   def get(self,request,*args,**kwargs):
-    cart_obj = pharmacistDetails.objects.filter(user_id = request.user.id)
+    cart_obj = pharmacistDetails.objects.all()
     serializer = self.serializer_class(instance=cart_obj, many=True)
     if True:
       return Response(serializer.data, status=status.HTTP_200_OK)
@@ -90,6 +91,64 @@ class docUpdaload(UpdateAPIView):
       res = {
           'data':pharmacist_serializer.data,
           'msg':'pharmacist details updated successfully',
+          'code':status.HTTP_201_CREATED
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Create your views here.
+class pharmacistStockView(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (PharmacistPermission,)
+  serializer_class = pharmacistStockSerializer
+
+  def get(self,request,*args,**kwargs):
+    stock_obj = pharmacistStock.objects.filter(user_id = request.user.id)
+    serializer = self.serializer_class(instance=stock_obj, many=True)
+    if True:
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+  def post(self, request, *args, **kwargs):
+      request.data['user'] = request.user.id
+      serializer = self.serializer_class(data=request.data)
+      if serializer.is_valid():
+          serializer.save()
+          res = {
+              'data':serializer.data,
+              'msg':'Medicine Added successfully',
+              'code':status.HTTP_201_CREATED
+          }
+          return Response(res, status=status.HTTP_201_CREATED)
+      else:
+          res = {
+              'msg':'invalide input',
+              'code':status.HTTP_400_BAD_REQUEST
+          }
+          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def update(self,request,*args,**kwargs):
+    try:
+      pharmacistStock_obj = pharmacistStock.objects.get(user_id=request.user.id, id=request.data['id'])
+      request.data.pop('user')
+      pharmacist_serializer = self.serializer_class(pharmacistStock_obj, data=request.data, partial=True)
+      if pharmacist_serializer.is_valid():
+        pharmacist_serializer.save()
+
+      res = {
+          'data':pharmacist_serializer.data,
+          'msg':'Data updated successfully',
           'code':status.HTTP_201_CREATED
       }
       return Response(res, status=status.HTTP_200_OK)
