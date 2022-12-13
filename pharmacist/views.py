@@ -29,6 +29,19 @@ class docUpdaload(UpdateAPIView):
   parser_classes = (MultiPartParser, FormParser)
   serializer_class = pharmacistDetailsSerializer
 
+  def get(self,request,*args,**kwargs):
+    cart_obj = pharmacistDetails.objects.filter(user_id = request.user.id)
+    serializer = self.serializer_class(instance=cart_obj, many=True)
+    if True:
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
   def post(self, request, *args, **kwargs):
     serializer = self.serializer_class(data=request.data)
     if request.data['user']:

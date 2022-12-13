@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail, OrderDetail, MedicineDetail, cartDetail, userIssueDetail, userIssueDetailAdmin
+from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail, OrderDetail, MedicineDetail, cartDetail, userIssueDetail, userIssueDetailAdmin, searchMedicine
 from django.urls import path, include
 from .otp_views import getPhoneNumberRegistered, getPhoneNumberRegistered_TimeBased, getPhoneNumberRegistered_TimeBased_verify
 
@@ -18,4 +18,5 @@ urlpatterns = [
     path('cart/', cartDetail.as_view(), name='cart'),
     path('user_Issue/', userIssueDetail.as_view(), name='userIssueDetail'),
     path('user_Issue_admin/', userIssueDetailAdmin.as_view(), name='userIssueDetailAdmin'),
+    path('search_meedgo_medicine/', searchMedicine.as_view(), name='search_medicine'),
 ]

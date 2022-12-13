@@ -23,8 +23,9 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData, userIssue
 from .price_scraping import One_mg, pharm_easy
-from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin
+from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer
 import traceback
+from django.db.models import Q
 from meedgo_services.utils import order_number
 
 
@@ -378,13 +379,14 @@ class cartDetail(UpdateAPIView):
       
   def update(self,request,*args,**kwargs):
     try:
-      medicine_id = Medicine.objects.get(name=request.data['name'])
-      medicine_serializer = MedicineSerializer(medicine_id, data=request.data, partial=True)
-      if medicine_serializer.is_valid():
-        medicine_serializer.save()
+      cart_id = Cart.objects.get(id=request.data['id'])
+      request.data.pop("user")
+      cart_serializer = CartSerializer(cart_id, data=request.data, partial=True)
+      if cart_serializer.is_valid():
+        cart_serializer.save()
 
       res = {
-        "msg":"Medicine Details updated successfully",
+        "msg":"Cart Details updated successfully",
       }
       return Response(res, status=status.HTTP_200_OK)
     except:
@@ -486,3 +488,21 @@ class userIssueDetailAdmin(UpdateAPIView):
           'code':status.HTTP_400_BAD_REQUEST
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class searchMedicine(generics.CreateAPIView):
+  permission_classes = (AllowAny,)
+  serializer_class = searchSerializer
+
+  def post(self, request, *args, **kwargs):
+    searched_data = {}
+    serch_Item = request.data
+    searched_data = serch_Item['searchField'].split(",")
+    data_To_search = [i.strip() for i in searched_data]
+    query = Q()
+    for entry in data_To_search:
+        query = query | Q(name__contains=entry)
+    find_med_obj = Medicine.objects.filter(query)
+    med_obj = MedicineSerializer(find_med_obj, many=True)
+
+    return Response(med_obj.data, status=200)

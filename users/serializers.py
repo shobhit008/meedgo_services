@@ -167,3 +167,12 @@ class userIssueSerializer_admin(serializers.ModelSerializer):
   class Meta:
     model = userIssue
     fields = "__all__"
+
+class searchMedicineSerializer(serializers.ModelSerializer):
+  searchField = serializers.CharField(write_only=True, required=True)
+  class Meta:
+    model = Profile
+    fields = ('searchField',)
+    extra_kwargs = {
+      'searchField': {'required': True}
+    }
