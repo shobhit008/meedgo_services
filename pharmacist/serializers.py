@@ -7,8 +7,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from .models import *
-from users.models import CustomeUser, Medicine
-from users.serializers import UserSerializer, MedicineSerializer
+from users.models import CustomeUser, Medicine, Profile
+from users.serializers import UserSerializer, MedicineSerializer, ProfileSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -34,4 +34,28 @@ class pharmacistStockSerializer(serializers.ModelSerializer):
   def get_meedgo_medicine(self, obj):
     med_obj = Medicine.objects.get(id = obj.meedgo_medicine.id)
     serializer = MedicineSerializer(med_obj, many=False)
+    return serializer.data
+
+class pharmacistDetailsDocSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = pharmacistDetails
+    fields = "__all__"
+
+
+
+class UserPharmacistSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
+  profile = serializers.SerializerMethodField("get_profile", allow_null=True)
+  pharmacist_docs = serializers.SerializerMethodField("get_pharmacist_docs", allow_null=True)
+  class Meta:
+    model = User
+    fields = "__all__"
+
+  def get_profile(self, obj):
+    profile_obj = Profile.objects.filter(user_id = obj.id)
+    serializer = UserProfileSerializer(profile_obj, many=True)
+    return serializer.data
+
+  def get_pharmacist_docs(self, obj):
+    pharmacist_obj = pharmacistDetails.objects.filter(user_id = obj.id)
+    serializer = pharmacistDetailsDocSerializer(pharmacist_obj, many=True)
     return serializer.data

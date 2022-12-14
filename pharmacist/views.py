@@ -18,7 +18,8 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
-from .serializers import pharmacistDetailsSerializer, pharmacistStockSerializer
+from users.serializers import UserSerializer
+from .serializers import pharmacistDetailsSerializer, pharmacistStockSerializer, UserPharmacistSerializer
 import traceback
 from meedgo_services.utils import order_number
 from .permissions import PharmacistPermission
@@ -56,8 +57,9 @@ class docUpdaload(UpdateAPIView):
           return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
       else:
-        user.is_active = True
-        user.save()
+        pass
+        # user.is_active = True
+        # user.save()
 
       if serializer.is_valid():
           serializer.save()
@@ -149,6 +151,52 @@ class pharmacistStockView(UpdateAPIView):
       res = {
           'data':pharmacist_serializer.data,
           'msg':'Data updated successfully',
+          'code':status.HTTP_201_CREATED
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+class pharmacistDetailsList(UpdateAPIView):
+  '''
+  For update method please add below payload
+  {
+  "id":Integer,
+  "is_approved":true
+  }
+  '''
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (AllowAny,)
+  serializer_class = UserPharmacistSerializer
+
+  def get(self,request,*args,**kwargs):
+    pharmacist_obj = CustomeUser.objects.filter(user_type = "Pharmacists")
+    serializer = self.serializer_class(instance=pharmacist_obj, many=True)
+    if True:
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+  def update(self,request,*args,**kwargs):
+    try:
+      user_obj = CustomeUser.objects.get(id = request.data.get("id"))
+      if request.data.get("is_approved"):
+        user_obj.is_active = True
+        user_obj.save()
+      else:
+        user_obj.is_active = False
+        user_obj.save()
+
+      res = {
+          'msg':'updated successfully',
           'code':status.HTTP_201_CREATED
       }
       return Response(res, status=status.HTTP_200_OK)

@@ -22,7 +22,7 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData, userIssue
-from .price_scraping import One_mg, pharm_easy
+from .price_scraping import One_mg, pharm_easy, flipkart_health
 from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer
 import traceback
 from django.db.models import Q
@@ -99,7 +99,8 @@ class SearchAPIViewDict(generics.CreateAPIView):
     serch_Item = request.data
     onemg_searched_data = One_mg(serch_Item)
     pharm_easy_data = pharm_easy(serch_Item)
-    searched_data.update({"one_mg":onemg_searched_data, "pharm_easy":pharm_easy_data})
+    flipkart_health_data = flipkart_health(serch_Item)
+    searched_data.update({"one_mg":onemg_searched_data, "pharm_easy":pharm_easy_data, "flipkart_health":flipkart_health_data})
     return Response(searched_data, status=200)
 
 #Class based view to register user
@@ -112,7 +113,8 @@ class SearchAPIViewList(generics.CreateAPIView):
     serch_Item = request.data
     onemg_searched_data = One_mg(serch_Item, True)
     pharm_easy_data = pharm_easy(serch_Item, True)
-    searched_data.update({"one_mg":onemg_searched_data, "pharm_easy":pharm_easy_data})
+    flipkart_health_data = flipkart_health(serch_Item, True)
+    searched_data.update({"one_mg":onemg_searched_data, "pharm_easy":pharm_easy_data, "flipkart_health":flipkart_health_data})
     return Response(searched_data, status=200)
 
 
