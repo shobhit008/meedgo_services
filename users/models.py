@@ -183,6 +183,13 @@ class Cart(models.Model):
     def __str__(self):
         return str(self.user.mobile_number)
 
+class orderCartData(models.Model):
+    order = models.ForeignKey('Order',on_delete=models.CASCADE, blank=True, null=True)
+    cart = models.ForeignKey('Cart',on_delete=models.DO_NOTHING, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.id)
+
 class userIssue(models.Model):
     userIssue_options = (
         ('Delivery issue', 'Delivery issue'),

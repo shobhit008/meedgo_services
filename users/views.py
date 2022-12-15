@@ -23,7 +23,7 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData, userIssue
 from .price_scraping import One_mg, pharm_easy, flipkart_health
-from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer
+from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer, orderCartData
 import traceback
 from django.db.models import Q
 from meedgo_services.utils import order_number
@@ -211,13 +211,13 @@ class AddressBookDetail(UpdateAPIView):
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-def createOrderMedicinesMedicine(user, data, order_id):
+def createOrderCart(user, data, order_id):
   if type(data) == str:
     data = [str(i) for i in data.split(",")]
   for i in data:
-    orderMedicineData.objects.create(
+    orderCartData.objects.create(
       order_id = order_id,
-      medicine_id = i
+      cart_id = i
       )
   return True
 
@@ -243,15 +243,15 @@ class OrderDetail(UpdateAPIView):
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
   def post(self, request, *args, **kwargs):
-      if request.data.get("add_medicines"):
-        add_medicines = request.data.get("add_medicines")
-        request.data.pop("add_medicines")
+      if request.data.get("add_cart"):
+        add_cart = request.data.get("add_cart")
+        request.data.pop("add_cart")
       request.data['user'] = request.user.id
       request.data["order_number"] = order_number(request.user.id)
       serializer = OrderSerializer(data=request.data)
       if serializer.is_valid():
           serializer.save()
-          createOrderMedicinesMedicine(request.user, add_medicines, serializer.data['id'])
+          createOrderCart(request.user, add_cart, serializer.data['id'])
           res = {
               'data':serializer.data,
               'msg':'Order created successfully',
@@ -363,6 +363,7 @@ class cartDetail(UpdateAPIView):
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
   def post(self, request, *args, **kwargs):
+      request.data['user'] = request.user.id
       serializer = self.serializer_class(data=request.data)
       if serializer.is_valid():
           serializer.save()

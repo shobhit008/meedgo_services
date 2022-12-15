@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from .models import CustomeUser, Profile, AddressBook,Order, Medicine, Cart, orderMedicineData, userIssue
+from .models import CustomeUser, Profile, AddressBook,Order, Medicine, Cart, orderMedicineData, userIssue ,orderCartData
 from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -130,17 +130,17 @@ class MedicineSerializer(serializers.ModelSerializer):
     fields = "__all__"
 
 class OrderSerializer(serializers.ModelSerializer):
-  medicenes = serializers.SerializerMethodField("get_mediciens", allow_null=True)
-  add_medicines = serializers.ListField(allow_null=True, required=False)
+  cart = serializers.SerializerMethodField("get_cart", allow_null=True)
+  add_cart = serializers.ListField(allow_null=True, required=False)
   class Meta:
     model = Order
     fields = "__all__"
 
-  def get_mediciens(self, obj):
-    orderMedicine = orderMedicineData.objects.filter(order = obj)
-    medicineIdList = [i.medicine.id for i in orderMedicine]
-    oderedMedicenes = Medicine.objects.filter(id__in=medicineIdList)
-    serializer = MedicineSerializer(oderedMedicenes, many=True)
+  def get_cart(self, obj):
+    orderCart = orderCartData.objects.filter(order = obj)
+    cartList = [i.cart.id for i in orderCart]
+    oderedCart = Cart.objects.filter(id__in=cartList)
+    serializer = CartSerializer(oderedCart, many=True)
     # serializer = orderMedicineDataSerializer(orderMedicine, many=True)
     return serializer.data
 
