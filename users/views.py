@@ -245,10 +245,15 @@ class OrderDetail(UpdateAPIView):
   def post(self, request, *args, **kwargs):
       if request.data.get("add_cart"):
         add_cart = request.data.get("add_cart")
-        request.data.pop("add_cart")
-      request.data['user'] = request.user.id
-      request.data["order_number"] = order_number(request.user.id)
-      serializer = OrderSerializer(data=request.data)
+        try:
+          request.data.pop("add_cart")
+          requestData = request.data
+        except:
+          requestData = request.data.dict()
+          requestData.pop("add_cart")
+      requestData['user'] = request.user.id
+      requestData["order_number"] = order_number(request.user.id)
+      serializer = OrderSerializer(data=requestData)
       if serializer.is_valid():
           serializer.save()
           createOrderCart(request.user, add_cart, serializer.data['id'])
