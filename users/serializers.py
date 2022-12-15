@@ -54,7 +54,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = User
-    fields = ('name','email', 'mobile_number','password', 'password2',
+    fields = ('id','name','email', 'mobile_number','password', 'password2',
           'first_name', 'last_name', 'Token', 'gender', 'user_type')
     extra_kwargs = {
       'first_name': {'required': False},

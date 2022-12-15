@@ -19,10 +19,13 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from users.serializers import UserSerializer
-from .serializers import pharmacistDetailsSerializer, pharmacistStockSerializer, UserPharmacistSerializer
+from .serializers import pharmacistDetailsSerializer, pharmacistStockSerializer, UserPharmacistSerializer, pharmacistBidingSerializer
 import traceback
 from meedgo_services.utils import order_number
 from .permissions import PharmacistPermission
+from datetime import timedelta
+from django.db.models.functions import Now
+from django.utils import timezone
 
 # Create your views here.
 class docUpdaload(UpdateAPIView):
@@ -197,6 +200,58 @@ class pharmacistDetailsList(UpdateAPIView):
 
       res = {
           'msg':'updated successfully',
+          'code':status.HTTP_201_CREATED
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class pharmacistBidingView(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (PharmacistPermission,)
+  serializer_class = pharmacistBidingSerializer
+
+  def get(self,request,*args,**kwargs):
+    this_hour = timezone.now().replace(minute=0, second=0, microsecond=0)
+    one_hour_later = this_hour + timedelta(hours=2)
+
+    booked_order_obj = Order.objects.filter(status="initiated", created__gt=Now()-timedelta(hours=2)).order_by('-created')
+    bulk_create_list = [pharmacistBiding(user = request.user, order = orderItem,) for orderItem in booked_order_obj]
+    bulk_create_obj = []
+    # bulk_create_obj = pharmacistBiding.objects.bulk_create(bulk_create_list)
+    for i in bulk_create_list:
+      try:
+         obkj = pharmacistBiding.objects.bulk_create(bulk_create_list)
+         bulk_create_obj.append(obkj[0])
+      except:
+        continue
+
+    biding_log = pharmacistBiding.objects.filter(is_biding_done = False).order_by('-created')
+    serializer = self.serializer_class(instance=biding_log, many=True)
+    if True:
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+  def update(self,request,*args,**kwargs):
+    try:
+      bid_obj = pharmacistBiding.objects.get(id = request.data.get('id'))
+      bid_obj.Pharmacist_best_price = request.data.get('Pharmacist_best_price')
+      bid_obj.quantity = request.data.get('quantity')
+      bid_obj.is_biding_done = True
+      bid_obj.save()
+
+      res = {
+          'msg':'Biding posted successfully',
           'code':status.HTTP_201_CREATED
       }
       return Response(res, status=status.HTTP_200_OK)

@@ -2,7 +2,8 @@ from rest_framework import permissions
 
 
 class PharmacistPermission(permissions.BasePermission):
-
+    message = {'msg': 'You are not authorized for this action'}
+    
     edit_methods = ("GET", "POST","PUT", "PATCH","DELETE")
 
     def has_permission(self, request, view):

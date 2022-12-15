@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from .models import *
 from users.models import CustomeUser, Medicine, Profile
-from users.serializers import UserSerializer, MedicineSerializer, ProfileSerializer, UserProfileSerializer
+from users.serializers import UserSerializer, MedicineSerializer, ProfileSerializer, UserProfileSerializer, OrderSerializer
 from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -58,4 +58,21 @@ class UserPharmacistSerializer(WritableNestedModelSerializer, serializers.ModelS
   def get_pharmacist_docs(self, obj):
     pharmacist_obj = pharmacistDetails.objects.filter(user_id = obj.id)
     serializer = pharmacistDetailsDocSerializer(pharmacist_obj, many=True)
+    return serializer.data
+
+class pharmacistBidingSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
+  user_data = serializers.SerializerMethodField("get_user", allow_null=True)
+  order_data = serializers.SerializerMethodField("get_order", allow_null=True)
+  class Meta:
+    model = pharmacistBiding
+    fields = "__all__"
+  
+  def get_user(self, obj):
+    user_obj = CustomeUser.objects.get(id = obj.user.id)
+    serializer = UserProfileSerializer(user_obj, many=False)
+    return serializer.data
+
+  def get_order(self, obj):
+    order_obj = Order.objects.get(id = obj.order.id)
+    serializer = OrderSerializer(order_obj, many=False)
     return serializer.data

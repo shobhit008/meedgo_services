@@ -17,5 +17,11 @@ class pharmacistStockAdmin(admin.ModelAdmin):
     """
     list_display = ('user', 'meedgo_medicine', 'pharmacist_price', 'total_stock')
 
-admin.site.register(pharmacistStock, pharmacistStockAdmin)
+class pharmacistBidingAdmin(admin.ModelAdmin):
+    """
+    This class is used to display the pharmacistStock model in the admin page.
+    """
+    list_display = ('user', 'order', 'quantity', 'Pharmacist_best_price', 'is_biding_done')
+
+admin.site.register(pharmacistBiding, pharmacistBidingAdmin)
 admin.site.register(pharmacistDetails, pharmacistDetailsAdmin)
