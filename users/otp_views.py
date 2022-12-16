@@ -73,7 +73,7 @@ class getPhoneNumberRegistered_TimeBased(APIView):
 
             print(OTP.now())
             # Using Multi-Threading send the OTP Using Messaging Services like Twilio or Fast2sms
-            return Response({"OTP": OTP.now(), "is_admin":Mobile.is_superuser}, status=200)  # Just for demonstration
+            return Response({"OTP": OTP.now(), "is_admin":Mobile.is_admin}, status=200)  # Just for demonstration
         else:
             return Response({"user_id":Mobile.id, "mag":"Document verificaton is pending"}, status=200)  # Just for demonstration
 

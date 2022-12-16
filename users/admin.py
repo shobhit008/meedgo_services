@@ -25,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
           'fields': ('mobile_number', 'password1', 'password2'),
       }),
   )
-  list_display = ['mobile_number', 'first_name', 'last_name', 'is_active','is_superuser']
+  list_display = ['mobile_number', 'first_name', 'last_name', 'is_active', 'is_admin','is_superuser']
   search_fields = ('mobile_number', 'first_name', 'last_name')
   ordering = ('mobile_number', )
 

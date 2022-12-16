@@ -76,6 +76,7 @@ class CustomeUser(AbstractUser):
         )
 
     age = models.IntegerField(default=0, blank=True)
+    is_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'mobile_number'
     REQUIRED_FIELDS = []
