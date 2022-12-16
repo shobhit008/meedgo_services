@@ -28,6 +28,7 @@ from datetime import timedelta, datetime
 from django.db.models.functions import Now
 from django.utils import timezone
 from django.db.models import Count
+from django.db.models import F, Func, Value, CharField,Sum
 
 # Create your views here.
 
@@ -42,6 +43,57 @@ class weekOrderData(UpdateAPIView):
     res = []
     for i in order_obj:
         res.append({"date":i['date_created'], 'count':i['created_count']})
+
+    if True:
+      return Response({"data":res}, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+# Create your views here.
+class monthlySaleValue(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (AdminAppPermission,)
+  serializer_class = weekOrderDataSerializer
+
+  def get(self,request,*args,**kwargs):
+    months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+    year = datetime.now().year
+    res = []
+
+    for month in months:
+       orders = Order.objects.filter(created__year=year, created__month=month)
+       res.append({"date":f"{year}-{month}-01", "value":sum([i.total for i in orders])})
+
+    if True:
+      return Response({"data":res}, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+# Create your views here.
+class monthlyCommission(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (AdminAppPermission,)
+  serializer_class = weekOrderDataSerializer
+
+  def get(self,request,*args,**kwargs):
+    months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+    year = datetime.now().year
+    marginPercent = 2
+    res = []
+
+    for month in months:
+       orders = Order.objects.filter(created__year=year, created__month=month)
+       res.append({"date":f"{year}-{month}-01", "value":sum([marginPercent*i.total/100 for i in orders])})
 
     if True:
       return Response({"data":res}, status=status.HTTP_200_OK)
