@@ -7,8 +7,9 @@ class PharmacistPermission(permissions.BasePermission):
     edit_methods = ("GET", "POST","PUT", "PATCH","DELETE")
 
     def has_permission(self, request, view):
-        if request.user.user_type == "Pharmacists":
-            return True
+        if bool(request.user.is_authenticated):
+            if request.user.user_type == "Pharmacists":
+                return True
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_superuser:
