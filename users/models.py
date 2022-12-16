@@ -181,8 +181,9 @@ class Cart(models.Model):
     user = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True)
     medicine = models.ForeignKey('Medicine',on_delete=models.DO_NOTHING, blank=True, null=True)
     quantity = models.CharField(max_length=200, blank=True, null=True)
+    is_order_placed = models.BooleanField(default=False)
     def __str__(self):
-        return str(self.user.mobile_number)
+        return str(self.id)+" -- "+str(self.user.mobile_number)
 
 class orderCartData(models.Model):
     order = models.ForeignKey('Order',on_delete=models.CASCADE, blank=True, null=True)

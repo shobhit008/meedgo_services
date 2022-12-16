@@ -219,6 +219,9 @@ def createOrderCart(user, data, order_id):
       order_id = order_id,
       cart_id = i
       )
+    cart_obj = Cart.objects.get(id = i)
+    cart_obj.is_order_placed = True
+    cart_obj.save()
   return True
 
 
@@ -355,7 +358,7 @@ class cartDetail(UpdateAPIView):
   serializer_class = CartSerializer
 
   def get(self,request,*args,**kwargs):
-    cart_obj = Cart.objects.filter(user_id = request.user.id)
+    cart_obj = Cart.objects.filter(user_id = request.user.id, is_order_placed=False)
     serializer = self.serializer_class(instance=cart_obj, many=True)
     if True:
       return Response(serializer.data, status=status.HTTP_200_OK)

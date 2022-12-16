@@ -70,7 +70,7 @@ class CartDataAdmin(admin.ModelAdmin):
     """
     This class is used to display the OrderMedicineData model in the admin page.
     """
-    list_display = ('user', 'medicine', 'quantity')
+    list_display = ('id', 'user', 'medicine', 'quantity')
 
 class userIssueAdmin(admin.ModelAdmin):
     """
