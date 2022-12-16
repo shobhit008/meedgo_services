@@ -154,9 +154,9 @@ class Medicine(models.Model):
     expiry_date = models.DateTimeField()
     category = models.CharField(max_length=50, blank=True, null=True)
     brand = models.CharField(max_length=200, blank=True, null=True)
-    price = models.IntegerField(default=0)
-    offer_price = models.IntegerField(default=0)
-    discount = models.IntegerField(default=0)
+    price = models.FloatField(default=0)
+    offer_price = models.FloatField(default=0)
+    discount = models.FloatField(default=0)
     discount_type = models.CharField(max_length=50, blank=True, null=True)
     flavour = models.CharField(max_length=50, blank=True, null=True)
     consume_type = models.CharField(max_length=50, blank=True, null=True)
@@ -213,6 +213,3 @@ class userIssue(models.Model):
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True, blank=True, null=True)
     comments = models.CharField(max_length=500, blank=True, null=True)
-
-
-
