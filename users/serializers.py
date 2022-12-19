@@ -132,10 +132,22 @@ class MedicineSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
   cart = serializers.SerializerMethodField("get_cart", allow_null=True)
+  user_data = serializers.SerializerMethodField("get_user", allow_null=True)
+  phamacist_data = serializers.SerializerMethodField("get_phamacist", allow_null=True)
   add_cart = serializers.ListField(allow_null=True, required=False)
   class Meta:
     model = Order
     fields = "__all__"
+
+  def get_user(self, obj):
+    userObj = User.objects.get(id=obj.user.id)
+    serializer = UserSerializer(userObj, many=False)
+    return serializer.data
+
+  def get_phamacist(self, obj):
+    userObj = User.objects.get(id=obj.phamacist_data.id)
+    serializer = UserSerializer(userObj, many=False)
+    return serializer.data
 
   def get_cart(self, obj):
     orderCart = orderCartData.objects.filter(order = obj)
