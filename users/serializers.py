@@ -145,9 +145,12 @@ class OrderSerializer(serializers.ModelSerializer):
     return serializer.data
 
   def get_phamacist(self, obj):
-    userObj = User.objects.get(id=obj.phamacist_data.id)
-    serializer = UserSerializer(userObj, many=False)
-    return serializer.data
+    if obj.phamacist_data:
+      userObj = User.objects.get(id=obj.phamacist_data.id)
+      serializer = UserSerializer(userObj, many=False)
+      return serializer.data
+    else:
+      return {}
 
   def get_cart(self, obj):
     orderCart = orderCartData.objects.filter(order = obj)
