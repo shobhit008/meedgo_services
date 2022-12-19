@@ -18,7 +18,7 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
-from users.serializers import UserSerializer, orderBidingSerializer
+from users.serializers import UserSerializer, orderBidingSerializer, OrderSerializer
 from .serializers import pharmacistDetailsSerializer, pharmacistStockSerializer, UserPharmacistSerializer, pharmacistBidingSerializer
 import traceback
 from meedgo_services.utils import order_number
@@ -264,7 +264,7 @@ class pharmacistBidingView(UpdateAPIView):
 
 class winLossBidingCount(UpdateAPIView):
   authentication_classes = (TokenAuthentication,)
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (PharmacistPermission,)
   serializer_class = orderBidingSerializer
 
   def get(self,request,*args,**kwargs):
@@ -281,5 +281,50 @@ class winLossBidingCount(UpdateAPIView):
       res = {
           'msg':'something went worng',
           'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+class pharmacistOrdarTracking(UpdateAPIView):
+  '''
+  in put condition please use this payload
+  {
+    "id":integer,
+    "status":""
+  }
+  '''
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (PharmacistPermission,)
+  serializer_class = OrderSerializer
+
+  def get(self,request,*args,**kwargs):
+    pharmacistBiding_obj = Order.objects.filter(user_id = request.user.id).order_by('-created')
+
+    serializer = self.serializer_class(instance=pharmacistBiding_obj, many=True)
+
+    if True:
+      return Response({"data":serializer.data}, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+  def update(self,request,*args,**kwargs):
+    try:
+      ord_obj = Order.objects.get(id = request.data.get('id'))
+      ord_obj.status = request.data.get('status')
+      ord_obj.save()
+
+      res = {
+          'msg':'Status updated successfully',
+          'code':status.HTTP_201_CREATED
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
