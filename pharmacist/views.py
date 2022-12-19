@@ -297,7 +297,7 @@ class pharmacistOrdarTracking(UpdateAPIView):
   serializer_class = OrderSerializer
 
   def get(self,request,*args,**kwargs):
-    pharmacistBiding_obj = Order.objects.filter(user_id = request.user.id).order_by('-created')
+    pharmacistBiding_obj = Order.objects.filter(phamacist_data_id = request.user.id).order_by('-created')
 
     serializer = self.serializer_class(instance=pharmacistBiding_obj, many=True)
 
