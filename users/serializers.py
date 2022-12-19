@@ -132,8 +132,9 @@ class MedicineSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
   cart = serializers.SerializerMethodField("get_cart", allow_null=True)
-  user_data = serializers.SerializerMethodField("get_user", allow_null=True)
-  phamacist_data = serializers.SerializerMethodField("get_phamacist", allow_null=True)
+  user_details = serializers.SerializerMethodField("get_user", allow_null=True)
+  phamacist_details = serializers.SerializerMethodField("get_phamacist", allow_null=True)
+  phamacist_lat_long = serializers.SerializerMethodField("get_phamacist_lat_log", allow_null=True)
   add_cart = serializers.ListField(allow_null=True, required=False)
   class Meta:
     model = Order
@@ -149,6 +150,22 @@ class OrderSerializer(serializers.ModelSerializer):
       userObj = User.objects.get(id=obj.phamacist_data.id)
       serializer = UserSerializer(userObj, many=False)
       return serializer.data
+    else:
+      return {}
+
+  def get_phamacist_lat_log(self, obj):
+    if obj.phamacist_data:
+      userObj = User.objects.get(id=obj.phamacist_data.id)
+      serializer = UserSerializer(userObj, many=False)
+      pharma_adddress = AddressBook.objects.filter(user_id=obj.phamacist_data.id, is_default=True)
+      if pharma_adddress.count()>0:
+        lat = pharma_adddress[0].lat
+        long = pharma_adddress[0].long
+      else:
+        lat = ""
+        long = ""
+
+      return {"lat":lat, "long":long}
     else:
       return {}
 

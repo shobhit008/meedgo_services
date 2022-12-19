@@ -114,6 +114,8 @@ class AddressBook(models.Model):
     state =  models.CharField(max_length=30, blank=True, null=True)
     is_default = models.BooleanField(default=False)
     country =  models.CharField(max_length=30, blank=True, null=True)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, default=0.00)
+    long = models.DecimalField(max_digits=9, decimal_places=6, default=0.00)
 
 
 class Order(models.Model):
