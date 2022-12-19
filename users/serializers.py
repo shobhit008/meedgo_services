@@ -212,6 +212,7 @@ class searchMedicineSerializer(serializers.ModelSerializer):
 
 class orderBidingSerializer(serializers.ModelSerializer):
   user_details = serializers.SerializerMethodField("get_user", allow_null=True)
+  phamacist_lat_long = serializers.SerializerMethodField("get_phamacist_lat_log", allow_null=True)
   order_details = serializers.SerializerMethodField("get_order", allow_null=True)
   class Meta:
     model = pharmacistBiding
@@ -227,3 +228,19 @@ class orderBidingSerializer(serializers.ModelSerializer):
     orderObj = Order.objects.get(id = obj.order.id)
     serializer = OrderSerializer(orderObj, many=False)
     return serializer.data
+
+  def get_phamacist_lat_log(self, obj):
+    if obj.user:
+      userObj = User.objects.get(id=obj.user.id)
+      serializer = UserSerializer(userObj, many=False)
+      pharma_adddress = AddressBook.objects.filter(user_id=obj.user.id, is_default=True)
+      if pharma_adddress.count()>0:
+        lat = pharma_adddress[0].lat
+        long = pharma_adddress[0].long
+      else:
+        lat = ""
+        long = ""
+
+      return {"lat":lat, "long":long}
+    else:
+      return {}
