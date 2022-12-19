@@ -29,16 +29,28 @@ class pharmacistStock(models.Model):
 
 
 class pharmacistBiding(models.Model):
+    WIN_STATUS = (
+        ('win', 'Win'),
+        ('in transition', 'In transition'),
+        ('loss', 'Loss'),
+    )
     user = models.ForeignKey(CustomeUser, on_delete=models.CASCADE, null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
     quantity = models.IntegerField(default=0)
     Pharmacist_best_price = models.FloatField(default=0)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     is_biding_done = models.BooleanField(default=False)
+    is_biding_win = models.CharField(max_length=20, choices=WIN_STATUS, default='in transition')
 
     def __str__(self):
         return self.user.mobile_number
 
     class Meta:
         unique_together = ('user', 'order',)
+
+
+class WinBid(models.Model):
+    customer = models.ForeignKey(CustomeUser, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="customer")
+    phamacist = models.ForeignKey(CustomeUser, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="winner_pharmacist")
+    winBid = models.ForeignKey(pharmacistBiding, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="winBid")
 

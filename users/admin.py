@@ -51,7 +51,7 @@ class OrderAdmin(admin.ModelAdmin):
     """
     This class is used to display the Order model in the admin page.
     """
-    list_display = ('user', 'order_number', 'total', 'stickers_price', 'discount', 'shipping_cost', 'status', 'created')
+    list_display = ('user', 'order_number', 'total', 'stickers_price', 'discount', 'shipping_cost', 'status', 'phamacist_data','created')
 
 class MedicineAdmin(admin.ModelAdmin):
     """

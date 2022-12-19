@@ -125,6 +125,7 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True)
+    phamacist_data = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True, related_name='phamacist_data')
     order_number = models.CharField(max_length=50, unique=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     stickers_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -206,6 +207,7 @@ class userIssue(models.Model):
         ('Calceled', 'Calceled'),
     )
     user = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True)
+    pharmacist = models.ForeignKey('CustomeUser',on_delete=models.DO_NOTHING, blank=True, null=True, related_name = "pharmacist")
     issue_number = models.CharField(max_length=50, unique=True, blank=True, null=True)
     category = models.CharField(max_length=20, choices=userIssue_options, default='Delivery issue', blank=True, null=True)
     description = models.CharField(max_length=500, blank=True, null=True)

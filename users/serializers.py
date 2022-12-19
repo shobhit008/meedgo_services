@@ -7,6 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from .models import CustomeUser, Profile, AddressBook,Order, Medicine, Cart, orderMedicineData, userIssue ,orderCartData
+from pharmacist.models import pharmacistBiding
 from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -176,3 +177,21 @@ class searchMedicineSerializer(serializers.ModelSerializer):
     extra_kwargs = {
       'searchField': {'required': True}
     }
+
+class orderBidingSerializer(serializers.ModelSerializer):
+  user_details = serializers.SerializerMethodField("get_user", allow_null=True)
+  order_details = serializers.SerializerMethodField("get_order", allow_null=True)
+  class Meta:
+    model = pharmacistBiding
+    fields = "__all__"
+
+  def get_user(self, obj):
+    userObj = User.objects.get(id=obj.user.id)
+    serializer = UserSerializer(userObj, many=False)
+    # serializer = orderMedicineDataSerializer(orderMedicine, many=True)
+    return serializer.data
+  
+  def get_order(self, obj):
+    orderObj = Order.objects.get(id = obj.order.id)
+    serializer = OrderSerializer(orderObj, many=False)
+    return serializer.data

@@ -22,8 +22,9 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData, userIssue
+from pharmacist.models import pharmacistBiding, WinBid
 from .price_scraping import One_mg, pharm_easy, flipkart_health
-from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer, orderCartData
+from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer, orderCartData, orderBidingSerializer
 import traceback
 from django.db.models import Q
 from meedgo_services.utils import order_number
@@ -553,3 +554,67 @@ class searchMedicine(generics.CreateAPIView):
     med_obj = MedicineSerializer(find_med_obj, many=True)
 
     return Response(med_obj.data, status=200)
+
+def pharmacist_book_order(bid_obj):
+  order_obj = Order.objects.get(order_number = bid_obj.order.order_number)
+  order_obj.phamacist_data = bid_obj.user
+  order_obj.status = "in transition"
+  order_obj.save()
+  return order_obj
+
+class getBidderList(UpdateAPIView):
+  '''
+  Customer to select a bid use put request of this api and send request in below format
+  {
+  "id":integer
+  } 
+  '''
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+  serializer_class = orderBidingSerializer
+
+  def get(self,request,*args,**kwargs):
+    initialtedOrder = Order.objects.filter(user_id=request.user.id, status = "initiated")
+    all_initiated_orders = [i.order_number for i in initialtedOrder]
+    pharmacistBiding_obj = pharmacistBiding.objects.filter(order__order_number__in = all_initiated_orders)
+    serializer = self.serializer_class(instance=pharmacistBiding_obj, many=True)
+    if True:
+      return Response({"data":serializer.data}, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+  def update(self,request,*args,**kwargs):
+    try:
+      # this code is for winner
+      bid_obj = pharmacistBiding.objects.get(id = request.data.get('id'))
+      bid_obj.is_biding_win = "win"
+      bid_obj.save()
+
+      pharmacist_book_order(bid_obj)
+      
+      # this code is for losser
+      bid_obj_losser = pharmacistBiding.objects.filter(order__order_number = bid_obj.order.order_number, is_biding_done = True, is_biding_win = 'in transition')
+      bid_obj_losser.update(is_biding_win='loss')
+
+      bid_obj.is_biding_done = True
+      bid_obj.save()
+
+      data  = self.serializer_class(instance=bid_obj, many=False)
+
+      res = {
+          'msg':'order confirmed',
+          'code':status.HTTP_201_CREATED,
+          'data':data.data
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)

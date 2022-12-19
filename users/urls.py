@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail, OrderDetail, MedicineDetail, cartDetail, userIssueDetail, userIssueDetailAdmin, searchMedicine, SearchAPIViewDict_one_mg, SearchAPIViewDict_pharm_easy, SearchAPIViewDict_flipkart
+from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail, OrderDetail, MedicineDetail, cartDetail, userIssueDetail, userIssueDetailAdmin, searchMedicine, SearchAPIViewDict_one_mg, SearchAPIViewDict_pharm_easy, SearchAPIViewDict_flipkart, getBidderList
 from django.urls import path, include
 from .otp_views import getPhoneNumberRegistered, getPhoneNumberRegistered_TimeBased, getPhoneNumberRegistered_TimeBased_verify
 
@@ -23,4 +23,5 @@ urlpatterns = [
     path('user_Issue/', userIssueDetail.as_view(), name='userIssueDetail'),
     path('user_Issue_admin/', userIssueDetailAdmin.as_view(), name='userIssueDetailAdmin'),
     path('search_meedgo_medicine/', searchMedicine.as_view(), name='search_medicine'),
+    path('get_bidder_list/', getBidderList.as_view(), name='get_bidder_list'),
 ]

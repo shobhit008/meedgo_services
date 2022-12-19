@@ -18,7 +18,7 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, orderBidingSerializer
 from .serializers import pharmacistDetailsSerializer, pharmacistStockSerializer, UserPharmacistSerializer, pharmacistBidingSerializer
 import traceback
 from meedgo_services.utils import order_number
@@ -258,5 +258,28 @@ class pharmacistBidingView(UpdateAPIView):
     except:
       res = {
         "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class winLossBidingCount(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+  serializer_class = orderBidingSerializer
+
+  def get(self,request,*args,**kwargs):
+    pharmacistBiding_obj = pharmacistBiding.objects.filter(user_id = request.user.id)
+    data = {
+      "total_win":pharmacistBiding_obj.filter(is_biding_win='win').count(),
+      "total_loss":pharmacistBiding_obj.filter(is_biding_win='loss').count(),
+    }
+
+    if True:
+      return Response({"data":data}, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
