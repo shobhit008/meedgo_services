@@ -104,6 +104,42 @@ class SearchAPIViewDict(generics.CreateAPIView):
     return Response(searched_data, status=200)
 
 #Class based view to register user
+class SearchAPIViewDict_one_mg(generics.CreateAPIView):
+  permission_classes = (AllowAny,)
+  serializer_class = searchSerializer
+
+  def post(self, request, *args, **kwargs):
+    searched_data = {}
+    serch_Item = request.data
+    onemg_searched_data = One_mg(serch_Item)
+    searched_data.update({"one_mg":onemg_searched_data})
+    return Response(searched_data, status=200)
+
+#Class based view to register user
+class SearchAPIViewDict_pharm_easy(generics.CreateAPIView):
+  permission_classes = (AllowAny,)
+  serializer_class = searchSerializer
+
+  def post(self, request, *args, **kwargs):
+    searched_data = {}
+    serch_Item = request.data
+    pharm_easy_data = pharm_easy(serch_Item)
+    searched_data.update({"pharm_easy":pharm_easy_data})
+    return Response(searched_data, status=200)
+
+#Class based view to register user
+class SearchAPIViewDict_flipkart(generics.CreateAPIView):
+  permission_classes = (AllowAny,)
+  serializer_class = searchSerializer
+
+  def post(self, request, *args, **kwargs):
+    searched_data = {}
+    serch_Item = request.data
+    flipkart_health_data = flipkart_health(serch_Item)
+    searched_data.update({"flipkart_health":flipkart_health_data})
+    return Response(searched_data, status=200)
+
+#Class based view to register user
 class SearchAPIViewList(generics.CreateAPIView):
   permission_classes = (AllowAny,)
   serializer_class = searchSerializer

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail, OrderDetail, MedicineDetail, cartDetail, userIssueDetail, userIssueDetailAdmin, searchMedicine
+from .views import RegisterUserAPIView, getUserDetail, SearchAPIViewList, SearchAPIViewDict, ProfilePicView, AddressBookDetail, OrderDetail, MedicineDetail, cartDetail, userIssueDetail, userIssueDetailAdmin, searchMedicine, SearchAPIViewDict_one_mg, SearchAPIViewDict_pharm_easy, SearchAPIViewDict_flipkart
 from django.urls import path, include
 from .otp_views import getPhoneNumberRegistered, getPhoneNumberRegistered_TimeBased, getPhoneNumberRegistered_TimeBased_verify
 
@@ -10,6 +10,10 @@ urlpatterns = [
     path("time_based/verify/<phone>/<otp>", getPhoneNumberRegistered_TimeBased_verify.as_view(), name="OTP Gen Time Based verify"),
     path("get_user_details/", getUserDetail.as_view(), name="get_user_details"),
     path("Search_medicine_dict/", SearchAPIViewDict.as_view(), name="SearchAPIViewDict"),
+    path("Search_medicine_dict/", SearchAPIViewDict.as_view(), name="SearchAPIViewDict"),
+    path("Search_medicine_one_mg_dict/", SearchAPIViewDict_one_mg.as_view(), name="SearchAPIViewDict_one_mg"),
+    path("Search_medicine_pharm_easy_dict/", SearchAPIViewDict_pharm_easy.as_view(), name="SearchAPIViewDict_pharm_easy"),
+    path("Search_medicine_flipkart_dict/", SearchAPIViewDict_flipkart.as_view(), name="SearchAPIViewDict_flipkart"),
     path("Search_medicine_list/", SearchAPIViewList.as_view(), name="SearchAPIViewList"),
     path('update_profile_pic/', ProfilePicView.as_view(), name='update_profile_pic'),
     path('Address_Book_Details/', AddressBookDetail.as_view(), name='AddressBookDetail'),

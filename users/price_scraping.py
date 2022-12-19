@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as soup
+import re
 
 
 def One_mg(serch_field, isList=False):
@@ -29,9 +30,9 @@ def One_mg(serch_field, isList=False):
 
     for mrp, name in zip(mrps, product_names):
         if isList:
-            mrp_name_list.append(f"{name.text} : {mrp.text}")
+            mrp_name_list.append(f"{name.text} : {float(re.findall('[0-9]+', mrp.text)[0])}")
         else:
-            mrp_name.update({name.text:mrp.text})
+            mrp_name.update({name.text:float(re.findall('[0-9]+', mrp.text)[0])})
 
 
     # print(mrp_name)
@@ -65,9 +66,9 @@ def pharm_easy(serch_field, isList=False):
 
     for mrp, name in zip(mrps, product_names):
         if isList:
-            mrp_name_list.append(f"{name.text} : {mrp.text}")
+            mrp_name_list.append(f"{name.text} : {float(re.findall('[0-9]+', mrp.text)[0])}")
         else:
-            mrp_name.update({name.text:mrp.text})
+            mrp_name.update({name.text:float(re.findall('[0-9]+', mrp.text)[0])})
 
 
     # print(mrp_name)
@@ -100,9 +101,9 @@ def flipkart_health(serch_field, isList=False):
 
     for mrp, name in zip(mrps, product_names):
         if isList:
-            mrp_name_list.append(f"{name.text} : {mrp.text}")
+            mrp_name_list.append(f"{name.text} : {float(re.findall('[0-9]+', mrp.text)[0])}")
         else:
-            mrp_name.update({name.text:mrp.text})
+            mrp_name.update({float(re.findall('[0-9]+', mrp.text)[0])})
 
 
     # print(mrp_name)
