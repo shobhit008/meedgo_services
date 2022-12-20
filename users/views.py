@@ -256,9 +256,9 @@ def createOrderCart(user, data, order_id):
       order_id = order_id,
       cart_id = i
       )
-    cart_obj = Cart.objects.get(id = i)
-    cart_obj.is_order_placed = True
-    cart_obj.save()
+    # cart_obj = Cart.objects.get(id = i)
+    # cart_obj.is_order_placed = True
+    # cart_obj.save()
   return True
 
 
@@ -584,6 +584,14 @@ def pharmacist_book_order(bid_obj):
   order_obj.phamacist_data = bid_obj.user
   order_obj.status = "in transition"
   order_obj.save()
+  
+  # this is to mark orderd cart
+  cart_obj = orderCartData.objects.filter(order__order_number = order_obj.order_number)
+  for i in cart_obj:
+    cart_obj = Cart.objects.get(id = i.cart_id)
+    cart_obj.is_order_placed = True
+    cart_obj.save()
+
   return order_obj
 
 class getBidderList(UpdateAPIView):
