@@ -537,6 +537,30 @@ class userIssueDetailAdmin(UpdateAPIView):
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
+  def update(self,request,*args,**kwargs):
+    try:
+      issue_obj = userIssue.objects.get(issue_number = request.data.get("issue_number"))
+      limited_Data = {
+        "issue_number": request.data.get("issue_number"),
+        "comments": request.data.get("issue_number"),
+        "status": request.data.get("status"),
+      }
+      issue_serializer = self.serializer_class(issue_obj, data=limited_Data, partial=True)
+      if issue_serializer.is_valid():
+        issue_serializer.save()
+
+      res = {
+          'data':issue_serializer.data,
+          'msg':'Issue Updated successfully',
+          'code':status.HTTP_201_CREATED
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
 
 class searchMedicine(generics.CreateAPIView):
   permission_classes = (AllowAny,)
