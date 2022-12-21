@@ -445,6 +445,10 @@ class cartDetail(UpdateAPIView):
 
   def delete(self, request, format=None):
     try:
+      orderCartData_obj = orderCartData.objects.filter(cart_id = request.data['id'])
+      for i in orderCartData_obj:
+        i.cart_id = ""
+        i.save()
       event = Cart.objects.get(id = request.data['id'])
       event.delete()
       res = {
