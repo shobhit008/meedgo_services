@@ -225,8 +225,9 @@ class pharmacistBidingView(UpdateAPIView):
     # bulk_create_obj = pharmacistBiding.objects.bulk_create(bulk_create_list)
     for i in bulk_create_list:
       try:
-         obkj = pharmacistBiding.objects.bulk_create(bulk_create_list)
-         bulk_create_obj.append(obkj[0])
+         obkj = pharmacistBiding.objects.get_or_create(user_id = i.user_id, order_id=i.order_id, quantity=i.quantity, Pharmacist_best_price=i.Pharmacist_best_price)
+        #  obkj = pharmacistBiding.objects.bulk_create(i)
+        #  bulk_create_obj.append(obkj[0])
       except:
         continue
 
