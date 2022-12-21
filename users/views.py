@@ -606,8 +606,8 @@ class getBidderList(UpdateAPIView):
   serializer_class = orderBidingSerializer
 
   def get(self,request,*args,**kwargs):
-    initialtedOrder = Order.objects.filter(user_id=request.user.id, status = "initiated")
-    all_initiated_orders = [i.order_number for i in initialtedOrder]
+    initialtedOrder = Order.objects.filter(user_id=request.user.id, status = "initiated").first()
+    all_initiated_orders = [i.order_number for i in [initialtedOrder]]
     pharmacistBiding_obj = pharmacistBiding.objects.filter(order__order_number__in = all_initiated_orders)
     serializer = self.serializer_class(instance=pharmacistBiding_obj, many=True)
     if True:
