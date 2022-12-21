@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_auth',
     'corsheaders',
+    'import_export',
 
     #project apps
     'users',

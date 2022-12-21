@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
 from .models import CustomeUser, Profile, AddressBook, Order, Medicine, orderMedicineData, Cart, userIssue, orderCartData
 from django.contrib.auth.admin import UserAdmin
+from import_export.admin import ImportExportModelAdmin
 
 # Register your models here.
 
@@ -53,7 +54,7 @@ class OrderAdmin(admin.ModelAdmin):
     """
     list_display = ('user', 'order_number', 'total', 'stickers_price', 'discount', 'shipping_cost', 'status', 'phamacist_data','created')
 
-class MedicineAdmin(admin.ModelAdmin):
+class MedicineAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     """
     This class is used to display the Order model in the admin page.
     """
