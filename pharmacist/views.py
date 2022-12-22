@@ -220,7 +220,9 @@ class pharmacistBidingView(UpdateAPIView):
     one_hour_later = this_hour + timedelta(hours=2)
 
     booked_order_obj = Order.objects.filter(status="initiated", created__gt=Now()-timedelta(hours=1)).order_by('-created')
+    print("================>>")
     bulk_create_list = [pharmacistBiding(user = request.user, order = orderItem,) for orderItem in booked_order_obj]
+    print("================>>")
     bulk_create_obj = []
     # bulk_create_obj = pharmacistBiding.objects.bulk_create(bulk_create_list)
     for i in bulk_create_list:
@@ -246,10 +248,17 @@ class pharmacistBidingView(UpdateAPIView):
   def update(self,request,*args,**kwargs):
     try:
       bid_obj = pharmacistBiding.objects.get(id = request.data.get('id'))
-      bid_obj.Pharmacist_best_price = request.data.get('Pharmacist_best_price')
-      bid_obj.quantity = request.data.get('quantity')
-      bid_obj.is_biding_done = True
-      bid_obj.save()
+      if bid_obj.is_biding_done:
+        res = {
+            'msg':'Bid already placed successfully',
+            'code':status.HTTP_201_CREATED
+        }
+        return Response(res, status=status.HTTP_200_OK)
+      else:
+        bid_obj.Pharmacist_best_price = request.data.get('Pharmacist_best_price')
+        bid_obj.quantity = request.data.get('quantity')
+        bid_obj.is_biding_done = True
+        bid_obj.save()
 
       res = {
           'msg':'Biding posted successfully',
