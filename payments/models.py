@@ -8,7 +8,7 @@ class PaytmTransaction(models.Model):
     made_by = models.ForeignKey(User, related_name='transactions', 
                                 on_delete=models.CASCADE)
     made_on = models.DateTimeField(auto_now_add=True)
-    amount = models.IntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     order_id = models.ForeignKey(Order,on_delete=models.DO_NOTHING, blank=True, null=True, related_name="transaction_order_id") #models.CharField(unique=True, max_length=100, null=True, blank=True)
     checksum = models.CharField(max_length=1000, null=True, blank=True)
 
