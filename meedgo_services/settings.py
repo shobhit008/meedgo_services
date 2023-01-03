@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     #project apps
     'users',
     'pharmacist',
-    'adminApp'
+    'adminApp',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +86,14 @@ SWAGGER_SETTINGS = {
     }
 }
 
+################# Paytm setups ##########################
+PAYTM_MERCHANT_ID = 'KdrBel67166523599721'
+PAYTM_SECRET_KEY = 'QdE9x0og5gT@IEwj'
+PAYTM_WEBSITE = 'WEBSTAGING'
+PAYTM_CHANNEL_ID = 'WAP'
+PAYTM_INDUSTRY_TYPE_ID = 'Retail'
+#########################################################
+
 ALLOWED_HOSTS=['*']
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -93,7 +102,7 @@ ROOT_URLCONF = 'meedgo_services.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
