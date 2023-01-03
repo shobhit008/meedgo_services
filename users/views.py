@@ -270,7 +270,7 @@ class OrderDetail(UpdateAPIView):
   serializer_class = OrderSerializer
   
   def get(self,request,*args,**kwargs):
-    address_book_obj = Order.objects.filter(user=request.user)
+    address_book_obj = Order.objects.filter(user=request.user, status__in = ['in transition', 'out for delivery', 'delivered'])
     serializer = OrderSerializer(instance=address_book_obj, many=True)
     if True:
       return Response(serializer.data, status=status.HTTP_200_OK)
