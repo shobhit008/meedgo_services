@@ -338,9 +338,12 @@ class MedicineDetail(UpdateAPIView):
 
   def get(self,request,*args,**kwargs):
     medicine_obj = Medicine.objects.all()
-    serializer = self.serializer_class(instance=medicine_obj, many=True)
+    paginator = PageNumberPagination()
+    paginator.page_size = page_size
+    result_page = paginator.paginate_queryset(medicine_obj, request)
+    serializer = self.serializer_class(instance=result_page, many=True)
     if True:
-      return Response(serializer.data, status=status.HTTP_200_OK)
+      return paginator.get_paginated_response(serializer.data)
 
     else:
       res = {
