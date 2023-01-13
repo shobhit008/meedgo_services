@@ -310,22 +310,22 @@ class OrderDetail(UpdateAPIView):
           }
           return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
-  # def update(self,request,*args,**kwargs):
-  #   try:
-  #     AddressBook_id = Order.objects.get(id=request.data['id'])
-  #     Address_serializer = OrderSerializer(AddressBook_id, data=request.data, partial=True)
-  #     if Address_serializer.is_valid():
-  #       Address_serializer.save()
+  def update(self,request,*args,**kwargs):
+    try:
+      order_obj = Order.objects.get(order_number =request.data['order_number'])
+      order_serializer = OrderSerializer(order_obj, data=request.data, partial=True)
+      if order_serializer.is_valid():
+        order_serializer.save()
 
-  #     res = {
-  #       "msg":"Profile updated successfully",
-  #     }
-  #     return Response(res, status=status.HTTP_200_OK)
-  #   except:
-  #     res = {
-  #       "msg":"something went wrong",
-  #     }
-  #     return Response(res, status=status.HTTP_400_BAD_REQUEST)
+      res = {
+        "msg":"Profile updated successfully",
+      }
+      return Response(res, status=status.HTTP_200_OK)
+    except:
+      res = {
+        "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MedicineDetail(UpdateAPIView):

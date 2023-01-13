@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login as auth_login
 from django.conf import settings
 from .models import PaytmTransaction
-from .paytm import generate_checksum, verify_checksum
+from .paytm import *
+import requests
 from django.views.decorators.csrf import csrf_exempt
 from users.models import CustomeUser, Order
 from django.shortcuts import render
@@ -29,7 +30,7 @@ from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 
-
+# import PaytmChecksum
 #Class based view to register user
 class initiatePayment(generics.CreateAPIView):
   authentication_classes = (TokenAuthentication,)
@@ -42,29 +43,68 @@ class initiatePayment(generics.CreateAPIView):
     transaction.save()
     merchant_key = settings.PAYTM_SECRET_KEY
 
-    params = (
-        ('MID', settings.PAYTM_MERCHANT_ID),
-        ('ORDER_ID', str(transaction.order_id.order_number)),
-        ('CUST_ID', str(transaction.made_by.mobile_number)),
-        ('TXN_AMOUNT', str(transaction.amount)),
-        ('CHANNEL_ID', settings.PAYTM_CHANNEL_ID),
-        ('WEBSITE', settings.PAYTM_WEBSITE),
-        # ('EMAIL', request.user.email),
-        # ('MOBILE_N0', '9911223388'),
-        ('INDUSTRY_TYPE_ID', settings.PAYTM_INDUSTRY_TYPE_ID),
-        ('CALLBACK_URL', 'http://127.0.0.1:8000/payment/callback/'),
-        # ('PAYMENT_MODE_ONLY', 'NO'),
-    )
+    ###############################################################################
+    paytmParams = dict()
+    paytmParams["body"] = {
+        "requestType"   : "Payment",
+        "mid"           : settings.PAYTM_MERCHANT_ID,
+        "websiteName"   : "PAYTM_WEBSITE",
+        "orderId"       : str(transaction.order_id.order_number),
+        "callbackUrl"   : f"https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID={str(transaction.order_id.order_number)}",
+        "txnAmount"     : {
+            "value"     : str(transaction.amount),
+            "currency"  : "INR",
+        },
+        "userInfo"      : {
+            "custId"    : str(transaction.made_by.mobile_number),
+        },
+    }
 
-    paytm_params = dict(params)
-    checksum = generate_checksum(paytm_params, merchant_key)
+    # Generate checksum by parameters we have in body
+    # Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys 
+    checksum = generateSignature(json.dumps(paytmParams["body"]), settings.PAYTM_SECRET_KEY)
 
-    transaction.checksum = checksum
+    paytmParams["head"] = {
+        "signature"    : checksum
+    }
+
+    post_data = json.dumps(paytmParams)
+
+    # for Staging
+    url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid={settings.PAYTM_MERCHANT_ID}&orderId={str(transaction.order_id.order_number)}"
+
+    # for Production
+    # url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
+    response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"}).json()
+    transaction.checksum = f'''{response}'''
     transaction.save()
+    return Response(response, status=200)
 
-    paytm_params['CHECKSUMHASH'] = checksum
-    print('SENT: ', checksum)
-    return Response(paytm_params, status=200)
+    ###############################################################################
+
+    # params = (
+    #     ('MID', settings.PAYTM_MERCHANT_ID),
+    #     ('ORDER_ID', str(transaction.order_id.order_number)),
+    #     ('CUST_ID', str(transaction.made_by.mobile_number)),
+    #     ('TXN_AMOUNT', str(transaction.amount)),
+    #     ('CHANNEL_ID', settings.PAYTM_CHANNEL_ID),
+    #     ('WEBSITE', settings.PAYTM_WEBSITE),
+    #     # ('EMAIL', request.user.email),
+    #     # ('MOBILE_N0', '9911223388'),
+    #     ('INDUSTRY_TYPE_ID', settings.PAYTM_INDUSTRY_TYPE_ID),
+    #     ('CALLBACK_URL', 'http://127.0.0.1:8000/payment/callback/'),
+    #     # ('PAYMENT_MODE_ONLY', 'NO'),
+    # )
+
+    # paytm_params = dict(params)
+    # checksum = generate_checksum(paytm_params, merchant_key)
+
+    # transaction.checksum = checksum
+    # transaction.save()
+
+    # paytm_params['CHECKSUMHASH'] = checksum
+    # print('SENT: ', checksum)
+    # return Response(paytm_params, status=200)
 
 
 # def initiate_payment(request):
