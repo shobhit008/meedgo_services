@@ -28,6 +28,8 @@ from .serializers import UserProfileSerializer, UserSerializer, searchSerializer
 import traceback
 from django.db.models import Q
 from meedgo_services.utils import order_number
+from rest_framework.pagination import PageNumberPagination
+from .constants import *
 
 
 User = get_user_model()
@@ -571,6 +573,8 @@ class searchMedicine(generics.CreateAPIView):
   serializer_class = searchSerializer
 
   def post(self, request, *args, **kwargs):
+    paginator = PageNumberPagination()
+    paginator.page_size = page_size
     searched_data = {}
     serch_Item = request.data
     searched_data = serch_Item['searchField'].split(",")
@@ -579,9 +583,10 @@ class searchMedicine(generics.CreateAPIView):
     for entry in data_To_search:
         query = query | Q(name__contains=entry)
     find_med_obj = Medicine.objects.filter(query)
-    med_obj = MedicineSerializer(find_med_obj, many=True)
+    result_page = paginator.paginate_queryset(find_med_obj, request)
+    med_obj = MedicineSerializer(result_page, many=True)
 
-    return Response(med_obj.data, status=200)
+    return paginator.get_paginated_response(med_obj.data)
 
 def pharmacist_book_order(bid_obj):
   order_obj = Order.objects.get(order_number = bid_obj.order.order_number)
