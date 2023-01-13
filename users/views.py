@@ -318,7 +318,7 @@ class OrderDetail(UpdateAPIView):
         order_serializer.save()
 
       res = {
-        "msg":"Profile updated successfully",
+        "msg":"Order updated successfully",
       }
       return Response(res, status=status.HTTP_200_OK)
     except:
