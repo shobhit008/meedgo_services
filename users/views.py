@@ -181,6 +181,11 @@ class ProfilePicView(generics.CreateAPIView):
           }
           return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+def setDefaultAddr(request):
+  address_book_obj = AddressBook.objects.filter(user=request.user)
+  for i in address_book_obj:
+    i.is_default=False
+    i.save()
 
 class AddressBookDetail(UpdateAPIView):
   authentication_classes = (TokenAuthentication,)
@@ -204,6 +209,8 @@ class AddressBookDetail(UpdateAPIView):
       request.data['user'] = request.user.id
       serializer = AddressBookSerializer(data=request.data)
       if serializer.is_valid():
+          if request.data.get("is_default", False):
+              setDefaultAddr(request)
           serializer.save()
           res = {
               'data':serializer.data,
@@ -223,6 +230,8 @@ class AddressBookDetail(UpdateAPIView):
       AddressBook_id = AddressBook.objects.get(id=request.data['id'])
       Address_serializer = AddressBookSerializer(AddressBook_id, data=request.data, partial=True)
       if Address_serializer.is_valid():
+        if request.data.get("is_default"):
+            setDefaultAddr(request)
         Address_serializer.save()
 
       res = {
@@ -249,6 +258,7 @@ class AddressBookDetail(UpdateAPIView):
         "msg":"something went wrong",
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
 
 def createOrderCart(user, data, order_id):
   if type(data) == str:
