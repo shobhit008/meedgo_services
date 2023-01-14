@@ -171,7 +171,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
   def get_cart(self, obj):
     orderCart = orderCartData.objects.filter(order = obj)
-    cartList = [i.cart.id for i in orderCart]
+    cartList = [i.cart.id for i in orderCart if i.cart]
     oderedCart = Cart.objects.filter(id__in=cartList)
     serializer = CartSerializer(oderedCart, many=True)
     # serializer = orderMedicineDataSerializer(orderMedicine, many=True)
