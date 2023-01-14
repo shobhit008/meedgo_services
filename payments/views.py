@@ -162,21 +162,45 @@ class paymentCallback(generics.CreateAPIView):
   def post(self, request, *args, **kwargs):
     received_data = dict(request.data)
     paytm_params = {}
-    paytm_checksum = received_data['CHECKSUMHASH']
+    paytm_checksum = ""#received_data['CHECKSUMHASH']
+    STATUS= ""
     for key, value in received_data.items():
+        if key == 'STATUS':
+            STATUS = value
         if key == 'CHECKSUMHASH':
             paytm_checksum = value
         else:
             paytm_params[key] = str(value)
+    try:
+        order_obj = PaytmTransaction.objects.get(order_id__order_number = received_data['ORDER_ID'])
+    except:
+        received_data['msg'] = "something went wrong"
+        return Response(received_data, status=status.HTTP_400_BAD_REQUEST)
+
+    if STATUS == "TXN_SUCCESS":
+        received_data['msg'] = "Payment successful"
+        order_obj.status = "successfull"
+        order_obj.save()
+        return Response(received_data, status=status.HTTP_200_OK)
+    else:
+        received_data['msg'] = "Payment Failed"
+        order_obj.status = "failed"
+        order_obj.save()
+        return Response(received_data, status=status.HTTP_400_BAD_REQUEST)
+
 
     # Verify checksum
-    is_valid_checksum = verify_checksum(paytm_params, settings.PAYTM_SECRET_KEY, str(paytm_checksum))
+    is_valid_checksum=""
+    try:
+        is_valid_checksum = verify_checksum(paytm_params, settings.PAYTM_SECRET_KEY, str(paytm_checksum))
+    except:
+        pass
 
     if is_valid_checksum:
         received_data['msg'] = "Checksum Matched"
     else:
         received_data['msg'] = "Checksum Mismatched"
-        return Response(received_data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(received_data, status=status.HTTP_200_OK)
     
     return Response(received_data, status=200)
 

@@ -236,7 +236,7 @@ class pharmacistBidingView(UpdateAPIView):
       except:
         continue
 
-    biding_log = pharmacistBiding.objects.filter(is_biding_done = False, created__gt=Now()-timedelta(hours=1)).order_by('-created')
+    biding_log = pharmacistBiding.objects.filter(user = request.user, is_biding_done = False, created__gt=Now()-timedelta(minutes=10)).order_by('-created')
     serializer = self.serializer_class(instance=biding_log, many=True)
     if True:
       return Response(serializer.data, status=status.HTTP_200_OK)

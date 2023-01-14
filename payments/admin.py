@@ -7,6 +7,6 @@ class PaytmTransactionAdmin(admin.ModelAdmin):
     """
     This class is used to display the pharmacistStock model in the admin page.
     """
-    list_display = ('made_by', 'made_on', 'amount', 'order_id', 'checksum')
+    list_display = ('made_by', 'made_on', 'amount', 'order_id', 'status')
 
 admin.site.register(PaytmTransaction, PaytmTransactionAdmin)
