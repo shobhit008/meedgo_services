@@ -219,7 +219,7 @@ class pharmacistBidingView(UpdateAPIView):
     this_hour = timezone.now().replace(minute=0, second=0, microsecond=0)
     one_hour_later = this_hour + timedelta(hours=2)
 
-    booked_order_obj = Order.objects.filter(status="initiated", created__gt=Now()-timedelta(hours=1)).order_by('-created')
+    booked_order_obj = Order.objects.filter(status="initiated", created__gt=Now()-timedelta(minutes=10)).order_by('-created')
     print("================>>")
     bulk_create_list = [pharmacistBiding(user = request.user, order = orderItem,) for orderItem in booked_order_obj]
     print("================>>")
