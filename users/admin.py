@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
-from .models import CustomeUser, Profile, AddressBook, Order, Medicine, orderMedicineData, Cart, userIssue, orderCartData
+from .models import CustomeUser, Profile, AddressBook, Order, Medicine, orderMedicineData, Cart, userIssue, orderCartData, feedback
 from django.contrib.auth.admin import UserAdmin
 from import_export.admin import ImportExportModelAdmin
 
@@ -86,7 +86,15 @@ class OrderCartDataAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'cart')
     search_fields = ('order',)
 
+class feedbackAdmin(admin.ModelAdmin):
+    """
+    This class is used to display the OrderCartDataAdmin model in the admin page.
+    """
+    list_display = ('order', 'staff_friendliness', 'online_delivery', 'pharmacist_knowledge', 'home_delivery', 'within_quotation', 'discount')
+    search_fields = ('order',)
 
+
+admin.site.register(feedback, feedbackAdmin)
 admin.site.register(orderCartData, OrderCartDataAdmin)
 admin.site.register(userIssue, userIssueAdmin)
 admin.site.register(Cart, CartDataAdmin)

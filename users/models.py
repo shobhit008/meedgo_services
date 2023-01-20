@@ -217,3 +217,15 @@ class userIssue(models.Model):
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True, blank=True, null=True)
     comments = models.CharField(max_length=500, blank=True, null=True)
+
+class feedback(models.Model):
+    order = models.ForeignKey(Order ,on_delete=models.CASCADE, blank=True, null=True)
+    staff_friendliness = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    online_delivery = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    pharmacist_knowledge = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    home_delivery = models.BooleanField(default=False)
+    within_quotation = models.BooleanField(default=False)
+    discount = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return self.order.order_number

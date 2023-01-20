@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from .models import CustomeUser, Profile, AddressBook,Order, Medicine, Cart, orderMedicineData, userIssue ,orderCartData
+from .models import CustomeUser, Profile, AddressBook,Order, Medicine, Cart, orderMedicineData, userIssue ,orderCartData, feedback
 from pharmacist.models import pharmacistBiding
 from rest_framework.authtoken.models import Token
 from drf_writable_nested.serializers import WritableNestedModelSerializer
@@ -244,3 +244,12 @@ class orderBidingSerializer(serializers.ModelSerializer):
       return {"lat":lat, "long":long}
     else:
       return {}
+
+class feedbackSerializer(serializers.ModelSerializer):
+  order_number = serializers.SerializerMethodField("get_order_number", allow_null=True)
+  class Meta:
+    model = feedback
+    fields = "__all__"
+  
+  def get_order_number(self, obj):
+    return obj.order.order_number

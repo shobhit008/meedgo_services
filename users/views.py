@@ -21,10 +21,10 @@ from rest_framework import generics
 from django.http import JsonResponse
 from rest_framework.generics import UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData, userIssue
+from .models import Profile, AddressBook, Order, Medicine, Cart, orderMedicineData, userIssue, feedback
 from pharmacist.models import pharmacistBiding, WinBid
 from .price_scraping import One_mg, pharm_easy, flipkart_health
-from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer, orderCartData, orderBidingSerializer
+from .serializers import UserProfileSerializer, UserSerializer, searchSerializer, ProfileSerializer, UserSerializer_get, AddressBookSerializer, OrderSerializer, MedicineSerializer, CartSerializer, userIssueSerializer, userIssueSerializer_admin, searchMedicineSerializer, orderCartData, orderBidingSerializer, feedbackSerializer
 import traceback
 from django.db.models import Q
 from meedgo_services.utils import order_number
@@ -672,3 +672,45 @@ class getBidderList(UpdateAPIView):
         "msg":"something went wrong",
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class orderFeedback(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+  serializer_class = feedbackSerializer
+
+  def post(self,request,*args,**kwargs):
+    try:
+      reqData = request.data
+      feedback_obj, created = feedback.objects.get_or_create(order__id = reqData['order'])
+      if created:
+        feedback_obj.order_id = reqData.get("order", 0)
+        feedback_obj.staff_friendliness = reqData.get("staff_friendliness", 0)
+        feedback_obj.online_delivery = reqData.get("online_delivery", 0)
+        feedback_obj.pharmacist_knowledge = reqData.get("pharmacist_knowledge", 0)
+        feedback_obj.home_delivery = reqData.get("home_delivery", False)
+        feedback_obj.within_quotation = reqData.get("within_quotation", False)
+        feedback_obj.discount = reqData.get("discount", 0)
+        feedback_obj.save()
+
+      data  = self.serializer_class(instance=feedback_obj, many=False)
+      res = {
+          'msg':'Order feedback',
+          'code':status.HTTP_200_OK,
+          'data':data.data
+      }
+      return Response(res, status=status.HTTP_200_OK)
+
+    except:
+      res = {
+          'msg':'something went wrong',
+          'code':status.HTTP_400_BAD_REQUEST,
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+    
+
+
+
+    
