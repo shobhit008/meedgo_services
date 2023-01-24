@@ -26,6 +26,8 @@ from .permissions import PharmacistPermission
 from datetime import timedelta
 from django.db.models.functions import Now
 from django.utils import timezone
+from rest_framework.pagination import PageNumberPagination
+from users.constants import page_size
 
 # Create your views here.
 class docUpdaload(UpdateAPIView):
@@ -339,5 +341,30 @@ class pharmacistOrdarTracking(UpdateAPIView):
     except:
       res = {
         "msg":"something went wrong",
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class pharmacistMissedOrdarTracking(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (PharmacistPermission,)
+  serializer_class = OrderSerializer
+
+  def get(self,request,*args,**kwargs):
+    paginator = PageNumberPagination()
+    paginator.page_size = page_size
+    pharmacistBiding_obj1 = pharmacistBiding.objects.filter(user = request.user, is_biding_win="loss").values_list('order')
+    pharmacistBiding_obj = Order.objects.filter(id__in = [i[0] for i in pharmacistBiding_obj1]).order_by('-created')
+    result_page = paginator.paginate_queryset(pharmacistBiding_obj, request)
+    serializer = self.serializer_class(instance=result_page, many=True)
+
+    if True:
+      return paginator.get_paginated_response(serializer.data)
+      # return Response({"data":serializer.data}, status=status.HTTP_200_OK)
+
+    else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
       }
       return Response(res, status=status.HTTP_400_BAD_REQUEST)
