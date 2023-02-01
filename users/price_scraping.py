@@ -25,8 +25,8 @@ def One_mg(serch_field, isList=False):
     mrp = []
     mrp_name = {}
     mrp_name_list = []
-    product_names = bsobj.findAll('div',{'class':'style__pro-title___3G3rr'})
-    mrps = bsobj.findAll('div',{'class':'style__price-tag___KzOkY'})
+    product_names = bsobj.findAll('span',{'class':'style__pro-title___3zxNC'})
+    mrps = bsobj.findAll('div',{'class':'style__price-tag___B2csA'})
 
     for mrp, name in zip(mrps, product_names):
         if isList:
