@@ -29,6 +29,7 @@ from django.db.models.functions import Now
 from django.utils import timezone
 from django.db.models import Count
 from django.db.models import F, Func, Value, CharField,Sum
+from payments.models import PaytmTransaction
 
 # Create your views here.
 
@@ -99,6 +100,40 @@ class monthlyCommission(UpdateAPIView):
       return Response({"data":res}, status=status.HTTP_200_OK)
 
     else:
+      res = {
+          'msg':'something went worng',
+          'code':status.HTTP_400_BAD_REQUEST
+      }
+      return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Create your views here.
+class transactionCount(UpdateAPIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (AdminAppPermission,)
+  serializer_class = weekOrderDataSerializer
+
+  def get(self,request,*args,**kwargs):
+    try:
+      res = {}
+      date = datetime.now()
+      annualTransaction = 0
+      monthTransaction = 0
+      quaterTransaction = 0
+
+      annualTransaction = PaytmTransaction.objects.filter(made_on__year=date.year).count()
+      monthTransaction = PaytmTransaction.objects.filter(made_on__month=date.month).count()
+      quaterTransaction = PaytmTransaction.objects.filter(made_on__month__range=[date.month-3 if date.month-3>0 else 0, date.month]).count()
+
+      res = {
+        "annualTransaction":annualTransaction,
+        "monthTransaction":monthTransaction,
+        "quaterTransaction":quaterTransaction,
+      }
+
+      return Response({"data":res}, status=status.HTTP_200_OK)
+    
+    except:
       res = {
           'msg':'something went worng',
           'code':status.HTTP_400_BAD_REQUEST
